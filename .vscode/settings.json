@@ -1,0 +1,4 @@
+{
+  "terraform.path": "bin/terraform",
+  "terraform.lintPath": "bin/tflint"
+}
