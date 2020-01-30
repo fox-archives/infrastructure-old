@@ -1,7 +1,7 @@
 #!/bin/sh -xe
 
 # prep
-sudo apt update -y
+sudo apt-get update -y
 
 # install make
 sudo apt-get install -y make

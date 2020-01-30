@@ -1,11 +1,16 @@
-resource "lxd_container" "lxd_corsac_1" {
-  name  = "corsac-1"
-  image = "ubuntu:18.04"
-  profiles = ["${lxd_profile.lxd_corsac_network.name}"]
+provider "lxd" {
+
+}
+
+resource "lxd_container" "corsac_containers" {
+  count            = length(var.container_names)
+  name             = "corsac-${var.container_names[count.index]}"
+  image            = "ubuntu:18.04"
+  profiles         = ["${lxd_profile.corsac_network_profile.name}"]
   wait_for_network = false
 }
 
-resource "lxd_profile" "lxd_corsac_network" {
+resource "lxd_profile" "corsac_network_profile" {
   name = "corsac-network"
 
   config = {
@@ -24,7 +29,7 @@ resource "lxd_profile" "lxd_corsac_network" {
   }
 }
 
-output "ip_c_1" {
-  value = "${lxd_container.lxd_corsac_1.ip_address}"
+output "foo" {
+  value       = lxd_profile.corsac_network_profile.name
+  description = "this is the network profile value"
 }
-
