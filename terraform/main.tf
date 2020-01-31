@@ -1,16 +1,5 @@
 provider "lxd" {
-  access_key=""
-  secret_key=""
-  profile=""
-}
 
-provider "aws" {
-  access_key=""
-  secret_key=""
-  profile=""
-  shared_credentials_file=""
-  region=""
-  assume_role=""
 }
 
 resource "lxd_container" "corsac_containers" {

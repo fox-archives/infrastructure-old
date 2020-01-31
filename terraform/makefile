@@ -15,4 +15,4 @@ apply:
 	if ! ../bin/terraform apply; then sleep 1 && terraform apply -auto-approve; fi
 
 lint:
-	../bin/tflint -c .tflint.hcl
+	./lint.sh

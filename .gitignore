@@ -1,6 +1,4 @@
 # terraform
-# temp manual terraform plugin dir
-terraform.d
 .terraform/
 *.tfstate
 *.tfstate.*

@@ -12,7 +12,11 @@ supported platforms
 
 ### prerequisites
 
+- docker
+- docker-compose
 - make
+- terraform
+- terraform-provider-lxd
 - ansible
 
 can use `install.sh` to install these dependencies
