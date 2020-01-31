@@ -1,6 +1,6 @@
 # corsac 
 
-an iaas i'm setting up on my hardware to help my friends create 'production-grade', statefull public-facing services. or just playing around in an (optionally ephemeral) rootfull linux environment
+an iaas i'm setting up on my hardware to help my friends create 'production-grade', statefull public-facing services. or just playing around as root in an (optionally ephemeral) linux environment.
 
 ## usage
 
@@ -12,6 +12,8 @@ supported platforms
 
 ### prerequisites
 
+can use `install.sh` to install the following dependencies
+
 - docker
 - docker-compose
 - make
@@ -19,13 +21,16 @@ supported platforms
 - terraform-provider-lxd
 - ansible
 
-can use `install.sh` to install these dependencies
+the following exist, but are not defined as code. you may need to manually set them up or change the code to make this project work
+
+- network bridge at br0
 
 ## installation
 
 ```sh
 git clone https://github.com/eankeen/corsac
 cd corsac
+./install.sh
 ```
 
 ## overview
