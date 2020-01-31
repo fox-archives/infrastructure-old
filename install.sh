@@ -3,7 +3,7 @@
 prefix="[corsac]"
 
 # ensusre running as root
-if [ $(id -u) -ne 0 ]
+if [ "$(id -u)" -ne 0 ]
 then
   echo "script not run as root. exiting"
   exit 1
@@ -55,7 +55,7 @@ then
   rmdir .tmp.terraform/
   rm -f terraform_${terraformVersion}_linux_amd64.zip
 else
-  echo "$prefix ansible already installed"
+  echo "$prefix terraform already installed"
 fi
 
 # install docker
