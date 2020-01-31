@@ -1,11 +1,6 @@
 config {
   module = true
-  deep_check = true
   force = false
-
-  varfile = [
-    "variables.tfvars"
-  ]
 }
 
 rule "terraform_dash_in_resource_name" {
