@@ -14,6 +14,7 @@ supported platforms
 
 can use `install.sh` to install the following dependencies
 
+- lxd
 - docker
 - docker-compose
 - make

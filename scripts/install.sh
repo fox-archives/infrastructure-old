@@ -94,4 +94,13 @@ else
   echo "$prefix docker-compose already installed"
 fi
 
+# install lxd
+if [ "$(which lxd)" = "" ]
+then
+  echo "$prefix installing lxd"
+  sudo snap install lxd
+else
+  echo "$prefix lxd already installed"
+fi
+
 sudo apt-get autoremove -y
