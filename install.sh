@@ -1,13 +1,6 @@
 #!/bin/sh -ue
 
-prefix="[corsac]"
-
-# ensusre running as root
-if [ "$(id -u)" -ne 0 ]
-then
-  echo "script not run as root. exiting"
-  exit 1
-fi
+prefix="[CORSAC]"
 
 # prep
 echo "$prefix updating package sources"
@@ -48,7 +41,7 @@ then
   fi
 
   terraformVersion="0.12.20"
-  wget https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip
+  wget -nv https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip
   unzip terraform_${terraformVersion}_linux_amd64.zip -d .tmp.terraform
   chmod +x .tmp.terraform/*
   sudo mv -f .tmp.terraform/* /usr/local/bin
@@ -56,6 +49,23 @@ then
   rm -f terraform_${terraformVersion}_linux_amd64.zip
 else
   echo "$prefix terraform already installed"
+fi
+
+# install terraform-provider-lxd
+if [ ! -e "$HOME/.terraform.d/plugins/linux_amd64/terraform-provider-lxd" ]
+then
+  echo "$prefix installing terraform-provider-lxd"
+
+  terraformProviderLxdVersion="v1.3.0"
+  wget -nv https://github.com/sl1pm4t/terraform-provider-lxd/releases/download/${terraformProviderLxdVersion}/terraform-provider-lxd_${terraformProviderLxdVersion}_linux_amd64.zip
+  unzip terraform-provider-lxd_${terraformProviderLxdVersion}_linux_amd64.zip -d .tmp.tlxd
+  chmod +x .tmp.tlxd/*
+  mkdir -p "$HOME/.terraform.d/plugins/linux_amd64"
+  mv -f .tmp.tlxd/* "$HOME/.terraform.d/plugins/linux_amd64/terraform-provider-lxd"
+  rmdir .tmp.tlxd/
+  rm -f terraform-provider-lxd_${terraformProviderLxdVersion}_linux_amd64.zip
+else
+  echo "$prefix terraform-provider-lxd already installed"
 fi
 
 # install docker
@@ -68,8 +78,7 @@ then
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   sudo add-apt-repository \
     -yu "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  sudo apt-get install \
-    -y docker-ce docker-ce-cli containerd.io
+  sudo apt-get install docker-ce docker-ce-cli containerd.io
 else
   echo "$prefix docker already installed"
 fi
