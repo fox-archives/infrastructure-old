@@ -3,3 +3,9 @@ variable "container_names" {
   type        = list(string)
   default     = ["alfa", "bravo", "charlie"]
 }
+
+variable "bridged_network_name" {
+  description = "the name or id for the bridged network interface"
+  type = string
+  default = "br0"
+}
