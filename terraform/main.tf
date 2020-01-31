@@ -1,5 +1,5 @@
 provider "lxd" {
-
+  accept_remote_certificate = false
 }
 
 resource "lxd_container" "corsac_containers" {
@@ -7,15 +7,14 @@ resource "lxd_container" "corsac_containers" {
   name             = "corsac-${var.container_names[count.index]}"
   image            = "ubuntu:18.04"
   profiles         = ["${lxd_profile.corsac_network_profile.name}"]
-  wait_for_network = false
 }
 
 resource "lxd_profile" "corsac_network_profile" {
-  name = "corsac-network"
+  name        = "corsac-network"
+  description = "corsac-network profiles. managed by terraform-provider-lxd"
 
   config = {
-    "limits.cpu"     = 2
-    "boot.autostart" = true
+    "limits.cpu"     = 4
   }
 
   device {
@@ -27,9 +26,14 @@ resource "lxd_profile" "corsac_network_profile" {
       path = "/"
     }
   }
-}
 
-output "foo" {
-  value       = lxd_profile.corsac_network_profile.name
-  description = "this is the network profile value"
+  device {
+    name = "br0"
+    type = "nic"
+
+    properties = {
+      nictype = "bridged"
+      parent  = "br0"
+    }
+  }
 }
