@@ -1,4 +1,4 @@
-# corsac 
+# corsac
 
 an iaas i'm setting up on my hardware to help my friends create 'production-grade', statefull public-facing services. or just playing around as root in an (optionally ephemeral) linux environment.
 
@@ -12,7 +12,7 @@ supported platforms
 
 ### prerequisites
 
-can use `install.sh` to install the following dependencies
+use `scripts/install.sh` to install the following dependencies
 
 - lxd
 - docker
@@ -31,7 +31,9 @@ the following exist, but are not defined as code. you may need to manually set t
 ```sh
 git clone https://github.com/eankeen/corsac
 cd corsac
-./install.sh
+./scripts/install.sh
+make bootstrap
+make start
 ```
 
 ## overview
