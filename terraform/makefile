@@ -1,4 +1,4 @@
-.PHONY: default, bootstrap
+.PHONY: default, bootstrap, start, lint
 
 default:
 	terraform plan
@@ -7,10 +7,8 @@ bootstrap:
 	lxc init
 	terraform init
 
-# terraform lxd provider creates resources too fast after they are destroyed,
-# failing to create because they 'already exist
-apply:
-	if ! terraform apply; then sleep 1 && terraform apply -auto-approve; fi
+start:
+	terraform apply -auto-approve
 
 lint:
 	./lint.sh
