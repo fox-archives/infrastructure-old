@@ -39,7 +39,7 @@ make start
 
 ## overview
 
-# distrobuilder
+### distrobuilder
 
 code to generate lxd images. used by `terraform` stage
 
