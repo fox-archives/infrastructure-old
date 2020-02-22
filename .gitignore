@@ -5,3 +5,6 @@
 
 # misc
 *.log
+*.xz
+*.squashfs
+rootfs/

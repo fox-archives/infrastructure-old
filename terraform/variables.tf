@@ -19,5 +19,5 @@ variable "bridged_network_name" {
 variable "cloud_image" {
   description = "image that lxc uses to create machine container"
   type        = string
-  default     = "corsac-modified"
+  default     = "corsac-ubuntu-image"
 }

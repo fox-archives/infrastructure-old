@@ -15,6 +15,7 @@ supported platforms
 use `scripts/install.sh` to install the following dependencies
 
 - lxd
+- distrobuilder
 - docker
 - docker-compose
 - make
@@ -38,9 +39,10 @@ make start
 
 ## overview
 
+# distrobuilder
+
+code to generate lxd images. used by `terraform` stage
+
 ### terraform
 
-base infrastructure. contains hcl files for lxd machine containers on bare metal via terraform-provider-lxd. higher density compared with openstack and opennebula environments. k8s uses nodes configured by this code
-
-- terraform
-- ansible
+base infrastructure. contains hcl files for lxd machine containers on bare metal via terraform-provider-lxd. higher density compared with kvm. kubernetes uses nodes configured by this code
