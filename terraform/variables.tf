@@ -1,7 +1,13 @@
 variable "container_names" {
   description = "unique names for each container. matches the hostname for each lxd container"
   type        = list(string)
-  default     = ["xray", "yankee", "zulu"]
+  default     = ["epsilon", "zeta", "theta", "iota", "kappa"]
+}
+
+variable "domain_name" {
+  description = "domain name of private internal network"
+  type        = string
+  default     = "corsac.internal.kofler.dev"
 }
 
 variable "bridged_network_name" {
@@ -11,7 +17,7 @@ variable "bridged_network_name" {
 }
 
 variable "cloud_image" {
-  description = "cloud image that lxc uses to create machine container"
+  description = "image that lxc uses to create machine container"
   type        = string
-  default     = "ubuntu:18.04"
+  default     = "corsac-modified"
 }

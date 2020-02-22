@@ -4,6 +4,11 @@ resource "lxd_container" "corsac_containers" {
   image            = var.cloud_image
   profiles         = [element(lxd_profile.corsac_profiles, count.index).name]
   wait_for_network = false
+
+  config = {
+    "user.fqdn" = "${var.container_names[count.index]}.${var.domain_name}"
+    "user.hostname" = var.container_names[count.index]
+  }
 }
 
 # user_data = "${data.template_file.test.rendered}"
@@ -12,7 +17,8 @@ data "template_file" "corsac_user_datas" {
   template = file("${path.module}/user-data.yml.tpl")
 
   vars = {
-    hostname = "corsac-${var.container_names[count.index]}"
+    hostname   = var.container_names[count.index]
+    domainName = var.domain_name
   }
 }
 
@@ -31,9 +37,17 @@ resource "lxd_profile" "corsac_profiles" {
   description = "corsac container profiles. managed by terraform-provider-lxd"
 
   config = {
-    "limits.cpu"     = 4,
-    "user.meta-data" = element(data.template_file.corsac_meta_datas.*.rendered, count.index)
-    "user.user-data" = element(data.template_file.corsac_user_datas.*.rendered, count.index)
+    "boot.autostart"              = true,
+    "boot.host_shutdown_timeout"  = 20
+    "limits.cpu.allowance"        = "50%"
+    "limits.memory"               = "50%"
+    "limits.memory.enforce"       = "soft"
+    "limits.memory.swap"          = true
+    "limits.memory.swap.priority" = 9
+    "limits.network.priority"     = 1
+    "security.nesting"            = true
+    "user.meta-data"              = element(data.template_file.corsac_meta_datas.*.rendered, count.index)
+    "user.user-data"              = element(data.template_file.corsac_user_datas.*.rendered, count.index)
   }
 
   device {
