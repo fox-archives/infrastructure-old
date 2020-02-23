@@ -2,7 +2,7 @@ resource "lxd_container" "corsac_containers" {
   count            = length(var.container_names)
   name             = "corsac-${var.container_names[count.index]}"
   image            = var.cloud_image
-  profiles         = [ lxd_profile.corsac_profile.name ]
+  profiles         = [lxd_profile.corsac_profile.name]
   wait_for_network = false
 
   config = {

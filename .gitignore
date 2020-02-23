@@ -16,3 +16,4 @@ rootfs/
 
 # misc
 *.key
+*.pub

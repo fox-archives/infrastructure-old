@@ -7,8 +7,7 @@ final_message: ${hostname} is finally up after $UPTIME at $TIMESTAMP
 manage_etc_hosts: true
 preserve_hostname: false
 fqdn: ${hostname}.${domainName}
-hostname: ${hostname}.${domainName}
-# TODO: make hostname fqdn at least until i get kea dhcp to construct fqdn based on hostname for a subset of the network hosts
+hostname: ${hostname}
 
 users:
   - default
