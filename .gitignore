@@ -7,4 +7,5 @@
 *.log
 *.xz
 *.squashfs
+*.key
 rootfs/

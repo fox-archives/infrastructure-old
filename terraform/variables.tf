@@ -21,3 +21,9 @@ variable "cloud_image" {
   type        = string
   default     = "corsac-ubuntu-image"
 }
+
+variable "ssh_key" {
+  description = "filename of ssh public key. this will be given to all corsac hosts"
+  type        = string
+  default     = "corsac-host.key.pub"
+}

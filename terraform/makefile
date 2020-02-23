@@ -6,6 +6,7 @@ default:
 bootstrap:
 	lxc init
 	terraform init
+	ssh-keygen -t ed25519 -f corsac-host.key -C 'ssh key for all corsac hosts'
 
 start:
 	terraform apply -auto-approve

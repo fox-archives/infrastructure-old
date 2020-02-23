@@ -23,6 +23,8 @@ system_info:
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
     shell: /bin/bash
+    ssh_authorized_keys:
+      - ${sshKey}
 
 cloud_init_modules:
  - migrator
