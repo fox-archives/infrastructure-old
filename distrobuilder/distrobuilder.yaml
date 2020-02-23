@@ -5,10 +5,11 @@ image:
   description: |-
     corsac ubuntu {{ image.release }}
   architecture: x86_64
+  variant: cloud
 
 source:
   downloader: debootstrap
-  same_as: gutsy
+  same_as: bionic
   url: http://archive.ubuntu.com/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
@@ -54,46 +55,71 @@ files:
     content: |-
       127.0.0.1	{{ config_get("user.fqdn", "localhost.localdomain") }}   {{ config_get("user.hostname", "localhost") }}
 
-  - path: /etc/resolvconf/resolv.conf.d/original
-    generator: remove
-
-  - path: /etc/resolvconf/resolv.conf.d/tail
-    generator: remove
-
   - path: /etc/machine-id
     generator: remove
 
-  - path: /etc/netplan/10-lxc.yaml
-    generator: dump
+  - path: /var/lib/cloud/seed/nocloud-net/user-data
+    generator: template
+    name: cloud-init-user
     content: |-
-      network:
-        version: 2
-        ethernets:
-          eth0: {dhcp4: true}
-    releases:
-      - artful
-      - bionic
-      - cosmic
-      - disco
-
-  - name: meta-data
-    generator: cloud-init
-    variants:
+      {{ config_get("user.user-data", properties.default) }}
+    template:
+      when:
+        - copy
+        - create
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
       - cloud
 
-  - name: network-config
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/meta-data
+    generator: template
+    name: cloud-init-meta
+    content: |-
+      instance-id: {{ container.name }}
+      local-hostname: {{ config_get("user.hostname", "localhost") }}
+      {{ config_get("user.meta-data", "") }}
+    template:
+      when:
+        - create
+        - copy
+    variant:
       - cloud
 
-  - name: user-data
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/network-config
+    generator: template
+    name: cloud-init-network
+    content: |-
+      {% if config_get("user.network-config", "") == "" %}version: 1
+      config:
+        - type: physical
+          name: eth0
+          subnets:
+            - type: {% if config_get("user.network_mode", "") == "link-local" %}manual{% else %}dhcp{% endif %}
+              control: auto{% else %}{{ config_get("user.network-config", "") }}{% endif %}
+    template:
+      when:
+        - create
+        - copy
+    variant:
       - cloud
 
-  - name: vendor-data
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/vendor-data
+    generator: template
+    name: cloud-init-vendor
+    content: |-
+      {{ config_get("user.vendor-data", properties.default) }}
+    template:
+      when:
+        - create
+        - copy
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
       - cloud
 
 packages:
@@ -135,7 +161,7 @@ packages:
       - cloud-init
       action: install
       variants:
-       - cloud
+        - cloud
 
 actions:
   - trigger: post-update

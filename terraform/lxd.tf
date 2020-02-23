@@ -6,8 +6,10 @@ resource "lxd_container" "corsac_containers" {
   wait_for_network = false
 
   config = {
-    "user.fqdn" = "${var.container_names[count.index]}.${var.domain_name}"
-    "user.hostname" = var.container_names[count.index]
+    "user.fqdn"      = "${var.container_names[count.index]}.${var.domain_name}"
+    "user.hostname"  = var.container_names[count.index]
+    "user.meta-data" = element(data.template_file.corsac_meta_datas.*.rendered, count.index)
+    "user.user-data" = element(data.template_file.corsac_user_datas.*.rendered, count.index)
   }
 }
 
