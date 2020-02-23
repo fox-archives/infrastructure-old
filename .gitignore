@@ -1,11 +1,18 @@
 # terraform
 .terraform/
 *.tfstate
-*.tfstate.*
+*.tfstate.backup
+*.tfstate.lock.info
 
-# misc
+# logs
 *.log
+
+# large files
 *.xz
 *.squashfs
-*.key
+
+# large dirs
 rootfs/
+
+# misc
+*.key
