@@ -4,12 +4,17 @@
 *.tfstate.backup
 *.tfstate.lock.info
 
+# packer
+packer_cache/
+
 # logs
 *.log
 
 # large files
 *.xz
 *.squashfs
+*.iso
+
 
 # large dirs
 rootfs/

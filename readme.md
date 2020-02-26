@@ -39,6 +39,10 @@ make start
 
 ## overview
 
+### master
+
+uses packer to create image for base master node. this node contains the kea dhcp server and bind9 dns server with integrated kea-dhcp-ddns
+
 ### distrobuilder
 
 uses [distrobuilder](https://github.com/lxc/distrobuilder) to buld custom lxd image. almost identical to regular ubuntu lxd images except for the custom `hostname` and `hosts` templates.
