@@ -13,29 +13,6 @@
     - name: remove dependencies that are no longer required
       apt:
         autoremove: yes
-  when: ansible_distribution == 'Ubuntu' and ubuntu1804.fullupgrade|default(False) == True
-
-- name: configure grub to enable serial console on Debian/Ubuntu
-  copy:
-    src: grub.ubuntu
-    dest: /etc/default/grub
-    mode: '0644'
-    owner: root
-    group: root
-    backup: no
-
-- name: Regenerate GRUB configuration
-  command: "/usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg"
-
-- name: Tweak Ubuntu netplan config
-  copy:
-    src: 01-netcfg.yaml.ubuntu
-    dest: /etc/netplan/01-netcfg.yaml
-    mode: '0644'
-    owner: root
-    group: root
-    backup: no
-
 
 - name: add local pub key to authorized_keys
   authorized_key:
@@ -43,13 +20,13 @@
     key: "{{ lookup('file', 'id_rsa.pub') }}"
     state: present
 
-- name: Tweak sshd_config
+- name: tweak sshd_config
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: ".*UseDNS.*"
     line: "UseDNS no"
 
-- name: Install common packages
+- name: install common packages
   package:
     name: "{{ item }}"
     state: latest

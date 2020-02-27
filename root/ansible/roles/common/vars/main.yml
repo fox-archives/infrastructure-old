@@ -1,7 +1,4 @@
 ---
-
-common_packages: []
-centos7:
+common_packages: ["neovim"]
 ubuntu1804:
   fullupgrade: False
-debian9:
