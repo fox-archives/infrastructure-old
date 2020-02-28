@@ -1,4 +1,0 @@
----
-common_packages: ["neovim"]
-ubuntu1804:
-  fullupgrade: False

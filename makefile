@@ -3,6 +3,7 @@
 default: lint
 
 bootstrap:
+	cd foundation && make bootstrap
 	cd distrobuilder make bootstrap
 	cd terraform && make bootstrap
 

@@ -1,0 +1,34 @@
+---
+- name: ubuntu latest packages update/upgrade and clean
+  block:
+    - name: update cache
+      apt:
+        update_cache: yes
+    - name: dist upgrade
+      apt:
+        upgrade: safe
+    - name: remove packages in cache
+      apt:
+        autoclean: yes
+    - name: remove unneeded dependencies
+      apt:
+        autoremove: yes
+
+- name: add public key to authorized_keys
+  authorized_key:
+    user: ops
+    key: "{{ lookup('file', 'foundation.key.pub') }}"
+    state: present
+
+- name: copy sshd config
+  copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: enable sshd with systemd
+  systemd:
+    name: ssh
+    enabled: true
