@@ -1,0 +1,17 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ni:
+      match:
+        name: e*
+      set-name: eth0
+      dhcp4: false
+      addresses:
+        - {{ ipv4Address }}
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.0.0.1
+      metric: 100
+      on-link: true
+      wakeonlan: true

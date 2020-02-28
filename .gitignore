@@ -15,7 +15,6 @@ packer_cache/
 *.squashfs
 *.iso
 
-
 # large dirs
 rootfs/
 
