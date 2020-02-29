@@ -3,7 +3,7 @@
     "cpu": "2",
     "ram": "2048",
     "name": "ubuntu",
-    "disk_size": "10000",
+    "disk_size": "3000",
     "version": "1804",
     "iso_checksum_type": "sha256",
     "iso_urls": "http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/mini.iso",
