@@ -1,5 +1,6 @@
 ---
 - name: apt package housekeeping
+  become: true
   block:
     - name: update cache
       apt:
@@ -13,7 +14,7 @@
   block:
     - name: copy templated /etc/netplan config
       template:
-        src: 80-network.yaml.jc2
+        src: 80-network.yaml.j2
         dest: /etc/netplan
         owner: root
         group: root
@@ -32,6 +33,7 @@
         mode: '0644'
 
 - name: setup sshd
+  become: true
   block:
     - name: add public key to authorized_keys
       authorized_key:

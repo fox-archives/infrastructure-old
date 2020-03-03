@@ -1,6 +1,6 @@
 
 ---
-- name: wait for ssh
+- name: wait for ss
   hosts: all
   gather_facts: false
   tasks:
@@ -14,7 +14,7 @@
   hosts: all
   gather_facts: true
   vars:
-    ipv4Address: '10.0.0.2'
+    ipv4Cidr: '10.0.0.2/8'
     hostname: foundation
     domainName: local.internal.kofler.dev
   roles:
