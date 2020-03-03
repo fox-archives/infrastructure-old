@@ -7,5 +7,12 @@ ifeq ("$(wildcard $(keyFilePath))","")
 	ssh-keygen -t ed25519 -f ${keyFilePath}
 endif
 
-local:
+build-ubuntu:
+	rm -rf artifacts/
 	packer build ubuntu.json
+
+build-ubuntu-vagrant:
+	vagrant up
+	vagrant console
+	make build-ubuntu
+	vagrant destroy
