@@ -1,0 +1,12 @@
+---
+- name: apt package housekeeping
+  block:
+    - name: update cache
+      apt:
+        update_cache: yes
+    - name: remove unneeded dependencies
+      apt:
+        autoremove: yes
+- name: install tools
+  apt:
+    name: neovim

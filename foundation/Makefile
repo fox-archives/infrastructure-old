@@ -1,18 +1,20 @@
 .PHONY: bootstrap
 
-keyFilePath := ansible-local/roles/common/files/foundation.key
+keyFileName = foundation.key
 
-bootstrap:
-ifeq ("$(wildcard $(keyFilePath))","")
-	ssh-keygen -t ed25519 -f ${keyFilePath}
+bootstrap: generateKey
+
+generateKey:
+ifeq ("$(wildcard $(keyFileName))","")
+	ssh-keygen -t ed25519 -f ${keyFileName}
 endif
+	cp ${keyFileName}.pub ansible-local/roles/common/files/${keyFileName}.pub
+	cp ${keyFileName} ansible-remote/${keyFileName}
 
-build-ubuntu:
+build-foundation:
 	rm -rf artifacts/
 	packer build ubuntu.json
 
-build-ubuntu-vagrant:
-	vagrant up
-	vagrant console
-	make build-ubuntu
-	vagrant destroy
+provision-foundation:
+	ansible-playbook -i ansible-remote/inventory.ini \
+		./ansible-remote/playbook.yml

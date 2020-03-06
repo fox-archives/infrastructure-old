@@ -1,0 +1,7 @@
+---
+- name: configure box
+  become: true
+  hosts: foundation
+  gather_facts: true
+  roles:
+    - common

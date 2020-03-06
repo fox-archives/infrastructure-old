@@ -1,6 +1,5 @@
 ---
 - name: apt package housekeeping
-  become: true
   block:
     - name: update cache
       apt:
@@ -10,7 +9,6 @@
         autoremove: yes
 
 - name: setup network
-  become: true
   block:
     - name: copy templated /etc/netplan config
       template:
@@ -33,7 +31,6 @@
         mode: '0644'
 
 - name: setup sshd
-  become: true
   block:
     - name: add public key to authorized_keys
       authorized_key:
@@ -53,3 +50,8 @@
       systemd:
         name: ssh
         enabled: true
+
+- name: setup sudoers
+  block:
+    - name: add ops to sudoers
+      command: "echo 'ops ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"

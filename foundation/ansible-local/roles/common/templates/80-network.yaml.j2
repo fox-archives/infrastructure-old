@@ -2,9 +2,12 @@ network:
   version: 2
   renderer: networkd
   ethernets:
-    etho:
+    eth0:
       dhcp4: false
       wakeonlan: true
+      nameservers:
+        addresses:
+          - 1.1.1.1
       addresses:
         - {{ ipv4Cidr }}
       routes:
