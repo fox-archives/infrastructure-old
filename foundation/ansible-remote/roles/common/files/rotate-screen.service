@@ -1,0 +1,9 @@
+[Unit]
+Description=rotates the screen
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/bin/echo 3 > /sys/class/graphics/fbcon/rotate'
+
+[Install]
+WantedBy=multi-user.target

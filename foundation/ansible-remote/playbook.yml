@@ -3,5 +3,9 @@
   become: true
   hosts: foundation
   gather_facts: true
+  vars:
+    ipv4Cidr: '10.0.0.2/8'
+    oldNetplanFile: 80-network.yaml
+    networkInterface: eth0
   roles:
     - common

@@ -1,0 +1,19 @@
+network:
+  version: 2
+  renderer: networkd
+  bridges:
+    br0:
+      dhcp4: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 10.0.0.10
+      addresses:
+        - {{ ipv4Cidr }}
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.0.0.1
+          metric: 100
+          on-link: true
+      interfaces:
+        - {{ networkInterface }}

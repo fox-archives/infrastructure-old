@@ -1,0 +1,21 @@
+---
+- name: apt update cache
+  apt:
+    update_cache: yes
+
+- name: apt remove unneeded dependencies
+  apt:
+    autoremove: yes
+
+- name: apt install dependencies
+  apt:
+    state: present
+    name:
+      - neovim
+      - snapd
+
+- name: snap install dependencies
+  snap:
+    state: present
+    name: lxd
+    classic: yes

@@ -1,0 +1,15 @@
+---
+- name: systemd copy rotate-screen service
+  copy:
+    src: rotate-screen.service
+    dest: /etc/systemd/system
+
+- name: systemd daemon-reload
+  systemd:
+    daemon_reload: yes
+
+- name: systemd enable rotate-screen
+  systemd:
+    name: rotate-screen
+    enabled: true
+

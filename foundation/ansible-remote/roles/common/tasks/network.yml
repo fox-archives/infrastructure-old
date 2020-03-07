@@ -1,0 +1,13 @@
+---
+- name: netplan remove old config
+  file:
+    path: "/etc/netplan/{{ oldNetplanFile }}"
+    state: absent
+
+- name: netplan copy new config
+  template:
+    src: 85-managed-network.yaml.j2
+    dest: /etc/netplan/85-managed-network.yaml
+
+- name: netplan run apply
+  command: netplan apply
