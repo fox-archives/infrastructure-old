@@ -2,7 +2,6 @@
 
 bootstrap:
 	make generateKey
-	ansible-galaxy install -r ansible-remote/requirements.yml
 
 keyFileName = foundation.key
 generateKey:
