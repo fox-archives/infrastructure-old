@@ -9,15 +9,15 @@ generateKey:
 ifeq ("$(wildcard $(keyFileName))","")
 	ssh-keygen -t ed25519 -f ${keyFileName}
 endif
-	cp ${keyFileName}.pub ansible-local/roles/common/files/${keyFileName}.pub
+	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 	cp ${keyFileName} ansible-remote/${keyFileName}
 
 foundation-build:
-	rm -rf artifacts/
-	packer build ubuntu.json
-	touch artifacts/.gitkeep
+	cd packer && rm -rf artifacts/
+	cd packer && packer build ubuntu.json
+	cd packer && touch artifacts/.gitkeep
 
 foundation-provision:
-	ansible-playbook -i ansible-remote/inventory.ini \
+	cd ansible-remote && ansible-playbook -i inventory.ini \
 		--extra-vars "rootPassword='$$rootPassword' opsPassword='$$opsPassword'" \
-		./ansible-remote/playbook.yml
+		./playbook.yml
