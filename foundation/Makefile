@@ -10,6 +10,7 @@ ifeq ("$(wildcard $(keyFileName))","")
 endif
 	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 	cp ${keyFileName} ansible-remote/${keyFileName}
+	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 
 foundation-build:
 	cd packer && rm -rf artifacts/
