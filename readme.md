@@ -1,6 +1,6 @@
-# corsac
+# infrastructure
 
-an iaas i'm setting up on my hardware to help my friends create 'production-grade', statefull public-facing services. or just playing around as root in an (optionally ephemeral) linux environment.
+my iac. contains personal configuration and some for a closed ias
 
 ## usage
 
