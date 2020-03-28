@@ -1,9 +1,10 @@
 # foundation
 
-`foundation` is the master node, from which all other nodes are orchestrated from. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (not vms because vtax won't let me sequeeze as much out of my hardware):
+`foundation` is the master node, from which all other nodes are orchestrated from. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (chosen over vms due to vtax)
 
 1. integrated kea dhcp4, kea dhcp ddns, and bind9 dns servers
 2. terraform, ansible, and distrobuilder, and a clone of this repository
+3. misc
 
 ## packer
 
