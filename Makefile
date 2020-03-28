@@ -1,14 +1,10 @@
-.PHONY: default, bootstrap, start, lint
+.PHONY: default, bootstrap lint
 
 default: lint
 
 bootstrap:
 	cd foundation && make bootstrap
-	cd distrobuilder make bootstrap
-	cd terraform && make bootstrap
-
-start:
-	cd terraform && make start
+	cd base && make bootstrap
 
 lint:
-	cd terraform && make lint
+	cd base && make lint
