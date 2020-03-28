@@ -1,8 +1,15 @@
-.PHONY: bootstrap, generateKey, foundation-build, foundation-provision
+.PHONY: bootstrap, lint, generateKey, packer-build, ansible-remote-provision
 
+default: lint
+
+# root (core)
 bootstrap:
 	make generateKey
 
+lint:
+	@echo
+
+# root (misc)
 keyFileName = foundation.key
 generateKey:
 ifeq ("$(wildcard $(keyFileName))","")
@@ -10,14 +17,17 @@ ifeq ("$(wildcard $(keyFileName))","")
 endif
 	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 	cp ${keyFileName} ansible-remote/${keyFileName}
-	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 
-foundation-build:
+
+# packer
+packer-build:
 	cd packer && rm -rf artifacts/
 	cd packer && packer build ubuntu.json
 	cd packer && touch artifacts/.gitkeep
 
-foundation-provision:
+
+# ansible-remote
+ansible-remote-provision:
 	cd ansible-remote && ansible-playbook -i inventory.ini \
 		--extra-vars "rootPassword='$$rootPassword' opsPassword='$$opsPassword'" \
 		./playbook.yml
