@@ -1,0 +1,59 @@
+---
+- name: apt package housekeeping
+  block:
+    - name: update cache
+      apt:
+        update_cache: yes
+    - name: remove unneeded dependencies
+      apt:
+        autoremove: yes
+
+- name: setup network
+  block:
+    - name: copy templated /etc/netplan config
+      template:
+        src: 80-network.yaml.j2
+        dest: /etc/netplan/80-network.yaml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: set hostname
+      hostname:
+        name: foundation
+
+    - name: copy templated /etc/hosts config
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
+- name: setup sshd
+  block:
+    - name: add public key to authorized_keys
+      authorized_key:
+        user: ops
+        key: "{{ lookup('file', 'base.key.pub') }}"
+        state: present
+
+    - name: copy sshd config
+      copy:
+        src: sshd_config
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0644'
+        validate: /usr/sbin/sshd -T -f %s
+
+    - name: enable sshd with systemd
+      systemd:
+        name: ssh
+        enabled: true
+
+- name: setup sudoers
+  blockinfile:
+    path: /etc/sudoers
+    block: |
+      ops ALL=(ALL) NOPASSWD: ALL
