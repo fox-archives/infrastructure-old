@@ -12,10 +12,5 @@
     state: present
     name:
       - neovim
-      - snapd
+      - tmux
 
-- name: snap install dependencies
-  snap:
-    state: present
-    name: lxd
-    classic: yes

@@ -1,9 +1,9 @@
 # foundation
 
-`foundation` is the master node, from which all other nodes are orchestrated from. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns to lxd containers:
+`foundation` is the master node, from which all other nodes are orchestrated from. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (not vms because vtax won't let me sequeeze as much out of my hardware):
 
-1.  this setups a bridged network device for some lxd containers, and updates passwords. the first machine container contains integrated kea dhcp4, kea dhcp ddns, and bind9 dns servers. anything else is provisioned in the second lxd container, such as terraform, ansible, and distrobuilder.
-
+1. integrated kea dhcp4, kea dhcp ddns, and bind9 dns servers
+2. terraform, ansible, and distrobuilder, and a clone of this repository
 
 ## packer
 
@@ -22,5 +22,7 @@ note that setting the `rootPassword` and/or `opsPassword` variables are not stri
 ```sh
 make bootstrap
 make foundation-build
-rootPassword=$(openssl passwd -1) opsPassword=$(openssl passwd -1) make foundation-provision
+# now, dd the image in `packer/artifacts` to the metal
+# on the tty, or from ssh's pty, resize partitions and vgs/lvs
+rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make foundation-provision
 ```

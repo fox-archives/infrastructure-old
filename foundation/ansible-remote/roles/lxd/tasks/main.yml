@@ -1,0 +1,31 @@
+---
+# commented code tests to see if lxd has been initialized, and registers a variable. because `lxd init --auto`
+# appears to be a no-op if it has been already initialized, we just leave it in the play unconditionally
+
+# - name: test if lxd is enabled
+#   shell: systemctl status lxd >/dev/null 2>&1; if [ $? -eq 4 ]; then echo notInitialized; else echo initialized; fi
+#   register: isLxdInitiated
+- name: install snapd apt package
+  apt:
+    name: snapd
+    state: present
+
+- name: install lxd snap package
+  snap:
+    name: lxd
+    classic: yes
+    state: present
+
+- name: initialize lxd
+  command: lxd init --auto
+
+- name: create test container
+  lxd_container:
+    name: test
+    state: started
+    source:
+      type: image
+      mode: pull
+      server: https://images.linuxcontainers.org
+      protocol: simplestreams
+      alias: ubuntu/bionic

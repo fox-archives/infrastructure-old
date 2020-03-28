@@ -12,4 +12,3 @@
   systemd:
     name: rotate-screen
     enabled: true
-

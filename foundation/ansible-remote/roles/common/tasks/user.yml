@@ -1,29 +1,44 @@
 ---
-# - name: debug opsPassword
-#   debug:
-#     var: opsPassword
+- name: debug opsPassword
+  debug:
+    var: opsPassword
+    verbosity: 2
 
-# - name: debug rootPassword
-#   debug:
-#     var: rootPassword
+- name: debug rootPassword
+  debug:
+    var: rootPassword
+    verbosity: 2
+
+- name: create lxd group
+  group:
+    name: lxd
+    state: present
+
+- name: change ops user details
+  user:
+    name: ops
+    comment: ops
+    append: yes
+    groups:
+      - ops
+      - lxd
 
 - name: change ops user password
   user:
     name: ops
-    comment: ops
     password: '{{ opsPassword }}'
+  when: opsPassword is defined and opsPassword != ''
+
+- name: change root user details
+  user:
+    name: root
     append: yes
     groups:
-      - ops
+      - root
     state: present
-  when: opsPassword is defined and opsPassword != ''
 
 - name: change root password
   user:
     name: root
     password: '{{ rootPassword }}'
-    append: yes
-    groups:
-      - root
-    state: present
   when: rootPassword is defined and rootPassword != ''

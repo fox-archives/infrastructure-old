@@ -8,8 +8,5 @@
 - name: install packages
   import_tasks: packages.yml
 
-- name: configure lxd
-  import_tasks: lxd.yml
-
 - name: config systemd
   import_tasks: systemd.yml
