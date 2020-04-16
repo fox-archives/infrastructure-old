@@ -1,14 +1,10 @@
-# folder/build.pkr.hcl
-
 source "qemu" "base_single" {
-  # name = "{{user `name`}}{{user `version`}}.iso"
-  # name = "${var.name}${var.version}.iso"
   format = "raw"
   accelerator = "kvm"
   net_device = "virtio-net"
   disk_interface = "virtio"
   qemuargs = [
-     ["-m", local.ram],
+    ["-m", local.ram],
     ["-smp", local.cpu]
   ]
   ssh_wait_timeout = "45m"

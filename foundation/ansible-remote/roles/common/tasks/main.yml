@@ -1,12 +1,6 @@
 ---
-- name: configure network
-  import_tasks: network.yml
-
 - name: configure users
   import_tasks: user.yml
-
-- name: install packages
-  import_tasks: packages.yml
 
 - name: config systemd
   import_tasks: systemd.yml

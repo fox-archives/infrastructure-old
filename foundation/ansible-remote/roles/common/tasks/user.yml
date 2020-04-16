@@ -1,13 +1,13 @@
 ---
-- name: debug opsPassword
-  debug:
-    var: opsPassword
-    verbosity: 2
+# - name: debug opsPassword
+#   debug:
+#     var: opsPassword
+#     verbosity: 2
 
-- name: debug rootPassword
-  debug:
-    var: rootPassword
-    verbosity: 2
+# - name: debug rootPassword
+#   debug:
+#     var: rootPassword
+#     verbosity: 2
 
 - name: create lxd group
   group:
@@ -23,22 +23,22 @@
       - ops
       - lxd
 
-- name: change ops user password
-  user:
-    name: ops
-    password: '{{ opsPassword }}'
-  when: opsPassword is defined and opsPassword != ''
+# - name: change ops user password
+#   user:
+#     name: ops
+#     password: '{{ opsPassword }}'
+#   when: opsPassword is defined and opsPassword != ''
 
-- name: change root user details
-  user:
-    name: root
-    append: yes
-    groups:
-      - root
-    state: present
+# - name: change root user details
+#   user:
+#     name: root
+#     append: yes
+#     groups:
+#       - root
+#     state: present
 
-- name: change root password
-  user:
-    name: root
-    password: '{{ rootPassword }}'
-  when: rootPassword is defined and rootPassword != ''
+# - name: change root password
+#   user:
+#     name: root
+#     password: '{{ rootPassword }}'
+#   when: rootPassword is defined and rootPassword != ''

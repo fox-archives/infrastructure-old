@@ -10,6 +10,13 @@
     name: snapd
     state: present
 
+# this prevents an error
+- name: install snap hello-world
+  snap:
+    name: hello-world
+    classic: no
+    state: present
+
 - name: install lxd snap package
   snap:
     name: lxd
@@ -21,7 +28,7 @@
 
 - name: create test container
   lxd_container:
-    name: test
+    name: test2
     state: started
     source:
       type: image

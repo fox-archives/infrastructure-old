@@ -9,6 +9,10 @@ uses [distrobuilder](https://github.com/lxc/distrobuilder) to build custom lxd i
 the template is filled in by values from the `user.fqdn` and `user.hostname` from the `config` block of each `corsac_containers` resource in `lxd.tf`
 code to generate lxd images. used by `terraform` stage
 
+## packer
+
+uses [packer](https://packer.io) to build pre-built iso images for base (physical) machines.
+
 ## terraform
 
 base infrastructure. contains hcl files for lxd machine containers on bare metal via terraform-provider-lxd. higher density compared with kvm. kubernetes uses nodes configured by this code
