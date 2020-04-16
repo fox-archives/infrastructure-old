@@ -17,7 +17,7 @@ remotely provisions `foundation`. this prepares system for `lxd` and creates a n
 
 ## distrobuilder
 
-builds images for use on
+builds lxc images for `foundation`.
 
 ## usage
 

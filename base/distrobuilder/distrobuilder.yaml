@@ -18,9 +18,7 @@ source:
 targets:
   lxc:
     create-message: |-
-      you just created an {{ image.description }} container.
-      to enable ssh, run: apt install openssh-server
-      no default root or user password are set by lxc.
+      you just created an {{ image.description }} container
     config:
       - type: all
         before: 5

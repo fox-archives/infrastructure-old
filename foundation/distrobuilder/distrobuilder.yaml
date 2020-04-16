@@ -791,10 +791,7 @@ source:
 targets:
   lxc:
     create-message: |-
-      You just created a {{ image.description }} container.
-
-      To enable SSH, run: apt install openssh-server
-      No default root or user password are set by LXC.
+      you just created a {{ image.description }} container
 
     config:
       - type: all
@@ -820,12 +817,19 @@ targets:
         content: |-
           lxc.arch = {{ image.architecture_personality }}
 
+# remember that config_get is processed by lcd
 files:
   - path: /etc/hostname
-    generator: hostname
+    generator: template
+    name: hostname
+    content: |-
+      {{ config_get("user.hostname", "localhost") }}
 
   - path: /etc/hosts
-    generator: hosts
+    generator: template
+    name: hosts
+    content: |-
+      127.0.0.1	{{ config_get("user.fqdn", "localhost.localdomain") }}   {{ config_get("user.hostname", "localhost") }}
 
   - path: /etc/resolvconf/resolv.conf.d/original
     generator: remove
@@ -842,10 +846,9 @@ files:
   - path: /etc/network/interfaces
     generator: dump
     content: |-
-      # This file describes the network interfaces available on your system
-      # and how to activate them. For more information, see interfaces(5).
+      # this file describes the network interfaces available on your system
+      # and how to activate them. for more information, see interfaces(5)
 
-      # The loopback network interface
       auto lo
       iface lo inet loopback
 
@@ -856,46 +859,26 @@ files:
     types:
       - container
 
-  - path: /etc/network/interfaces
-    generator: dump
-    content: |-
-      # This file describes the network interfaces available on your system
-      # and how to activate them. For more information, see interfaces(5).
+  # - path: /etc/network/interfaces
+  #   generator: dump
+  #   content: |-
+  #     # this file describes the network interfaces available on your system
+  #     # and how to activate them. for more information, see interfaces(5)
 
-      # The loopback network interface
-      auto lo
-      iface lo inet loopback
+  #     auto lo
+  #     iface lo inet loopback
 
-      auto enp5s0
-      iface enp5s0 inet dhcp
+  #     auto enp5s0
+  #     iface enp5s0 inet dhcp
 
-      source /etc/network/interfaces.d/*.cfg
-    types:
-      - vm
-    releases:
-      - stretch
-      - buster
-      - bullseye
-      - sid
-
-  - path: /etc/network/interfaces
-    generator: dump
-    content: |-
-      # This file describes the network interfaces available on your system
-      # and how to activate them. For more information, see interfaces(5).
-
-      # The loopback network interface
-      auto lo
-      iface lo inet loopback
-
-      auto eth0
-      iface eth0 inet dhcp
-
-      source /etc/network/interfaces.d/*.cfg
-    types:
-      - vm
-    releases:
-      - jessie
+  #     source /etc/network/interfaces.d/*.cfg
+  #   types:
+  #     - vm
+  #   releases:
+  #     - stretch
+  #     - buster
+  #     - bullseye
+  #     - sid
 
   - path: /etc/default/grub.d/50-lxd.cfg
     generator: dump
@@ -914,24 +897,68 @@ files:
     types:
       - vm
 
-  - name: meta-data
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/user-data
+    generator: template
+    name: cloud-init-user
+    content: |-
+      {{ config_get("user.user-data", properties.default) }}
+    template:
+      when:
+        - copy
+        - create
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
       - cloud
 
-  - name: network-config
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/meta-data
+    generator: template
+    name: cloud-init-meta
+    content: |-
+      instance-id: {{ container.name }}
+      local-hostname: {{ config_get("user.hostname", "localhost") }}
+      {{ config_get("user.meta-data", "") }}
+    template:
+      when:
+        - create
+        - copy
+    variant:
       - cloud
 
-  - name: user-data
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/network-config
+    generator: template
+    name: cloud-init-network
+    content: |-
+      {% if config_get("user.network-config", "") == "" %}version: 1
+      config:
+        - type: physical
+          name: eth0
+          subnets:
+            - type: {% if config_get("user.network_mode", "") == "link-local" %}manual{% else %}dhcp{% endif %}
+              control: auto{% else %}{{ config_get("user.network-config", "") }}{% endif %}
+    template:
+      when:
+        - create
+        - copy
+    variant:
       - cloud
 
-  - name: vendor-data
-    generator: cloud-init
-    variants:
+  - path: /var/lib/cloud/seed/nocloud-net/vendor-data
+    generator: template
+    name: cloud-init-vendor
+    content: |-
+      {{ config_get("user.vendor-data", properties.default) }}
+    template:
+      when:
+        - create
+        - copy
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
       - cloud
 
   # - name: lxd-agent

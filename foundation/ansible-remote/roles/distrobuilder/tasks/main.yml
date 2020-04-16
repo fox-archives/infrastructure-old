@@ -15,7 +15,7 @@
     recursive: yes
     delete: yes
 
-- name: import image
+- name: import custom base image
   block:
     - name: delete previous image (if exists)
       # '|| true' required so ansible doesn't fail if image does not exist
