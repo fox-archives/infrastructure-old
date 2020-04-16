@@ -35,8 +35,11 @@ ansible-remote-provision:
 		./playbook.yml
 
 
-# ansible-local
-ansible-local-provision:
-	cd ansible-local && ansible-playbook -i inventory.ini \
-		--ask-become-pass \
-		./playbook.yml
+# distrobuilder
+distrobuilder-bootstrap:
+	cd distrobuilder && test -d rootfs && sudo rm -rf rootfs && mkdir rootfs || true
+	cd distrobuilder && sudo distrobuilder build-dir distrobuilder.yaml rootfs
+
+distrobuilder-package:
+# packaged image will be imported to lxc via ansible
+	cd distrobuilder && sudo distrobuilder pack-lxd distrobuilder.yaml rootfs/ artifacts/

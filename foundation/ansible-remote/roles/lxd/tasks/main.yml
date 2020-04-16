@@ -5,12 +5,28 @@
 # - name: test if lxd is enabled
 #   shell: systemctl status lxd >/dev/null 2>&1; if [ $? -eq 4 ]; then echo notInitialized; else echo initialized; fi
 #   register: isLxdInitiated
+
+- name: create lxd group
+  group:
+    name: lxd
+    state: present
+
+- name: add ops to lxd group
+  user:
+    name: ops
+    comment: ops
+    append: yes
+    groups:
+      - ops
+      - lxd
+
 - name: install snapd apt package
   apt:
     name: snapd
     state: present
 
-# this prevents an error
+# this prevents an error (implicit dependency on core?)
+# this also tests basic snap functionality
 - name: install snap hello-world
   snap:
     name: hello-world
@@ -26,13 +42,23 @@
 - name: initialize lxd
   command: lxd init --auto
 
-- name: create test container
-  lxd_container:
-    name: test2
-    state: started
-    source:
-      type: image
-      mode: pull
-      server: https://images.linuxcontainers.org
-      protocol: simplestreams
-      alias: ubuntu/bionic
+- name: ensure lxd is functional
+  block:
+    - name: download test image
+      lxd_container:
+        name: debian-base
+        state: started
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org
+          protocol: simplestreams
+          alias: debian/stretch
+    - name: stop test image
+      lxd_container:
+        name: debian-base
+        state: stopped
+
+# - name: import lxc image via distrobuilder
+#   import_role:
+#     name: distrobuilder

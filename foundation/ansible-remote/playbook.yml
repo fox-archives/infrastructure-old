@@ -1,14 +1,22 @@
 ---
-- name: configure box
+- name: configure foundation
   become: true
   hosts: foundation
   gather_facts: true
   vars:
-    # ipv4Cidr: '10.0.0.2/16'
-    # oldNetplanFile: 80-network.yaml
-    # networkInterface: eth0
+    networkInterface2: enp7s0f1
+    rootArtifacts: /home/ops/ansible
+    imageName: debian-base-custom
+    containerName1: debian-one
+    containerName2: debian-two
   roles:
-    - common
-    - packages
-    - lxd
-    # - network
+    - role: common
+      tags: common
+    - role: packages
+      tags: packages
+    - role: network
+      tags: network
+    - role: lxd
+      tags: lxd
+    - role: distrobuilder
+      tags: distrobuilder

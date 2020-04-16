@@ -1,6 +1,6 @@
 ---
-- name: configure users
-  import_tasks: user.yml
+# - name: configure users
+#   import_tasks: user.yml
 
 - name: config systemd
   import_tasks: systemd.yml

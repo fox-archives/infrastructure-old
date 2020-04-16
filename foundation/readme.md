@@ -1,10 +1,9 @@
 # foundation
 
-`foundation` is the master node, from which all other nodes are orchestrated from. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (chosen over vms due to vtax)
+`foundation` is the master node, from which all other nodes are orchestrated from, at least indirectly. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (to spare vtax). the machine provisioning `foundation` requires packer, ansible, and distrobuilder
 
-1. integrated kea dhcp4, kea dhcp ddns, and bind9 dns servers
-2. terraform, ansible, and distrobuilder, and a clone of this repository
-3. misc
+1. kea dhcp4, kea ddns, and bind9 dns server
+2. terraform, ansible, and distrobuilder, and a git clone of this repository
 
 ## packer
 
@@ -14,7 +13,11 @@ in addition to root, it creates an `ops` user, with passwords `root-password` an
 
 ## ansible-remote
 
-remotely provisions `foundation`. this mainly reconfigures the network (creates a bridged network device), recreates passwords for `root` and `user`, and creates some lxd machine containers. i created the `rotate-screen.service` because i use a monitor that's rotated 90 degrees for troubleshooting when the network is down.
+remotely provisions `foundation`. this prepares system for `lxd` and creates a network interface bridge. i created the `rotate-screen.service` because i use a monitor that's rotated 90 degrees for troubleshooting when the network is down. to do this, `foundation` needs to be accessible at `10.0.0.2` using `foundation.key`
+
+## distrobuilder
+
+builds images for use on
 
 ## usage
 
