@@ -17,7 +17,7 @@ system_info:
   default_user:
     name: ops
     # TODO: test to ensure this does not leave uncommented after debug
-    passwd: $6$QwM7oc3p$TfPrrnIJO7ff72AXTcI7h3Y7xlDV8OSEmznjyQDck7joC9T8mEgqvhYQB7c1ADrKjpB5OH6tfhPFoRA2O9yGo1
+    # passwd: $6$QwM7oc3p$TfPrrnIJO7ff72AXTcI7h3Y7xlDV8OSEmznjyQDck7joC9T8mEgqvhYQB7c1ADrKjpB5OH6tfhPFoRA2O9yGo1
     lock_passwd: false
     gecos: opts
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
@@ -44,22 +44,20 @@ cloud_init_modules:
   - ssh
 
 cloud_config_modules:
- - emit_upstart
- - snap
- - ssh-import-id
- - locale
- - set-passwords
- - grub-dpkg
- - apt-pipelining
- - apt-configure
- - ntp
-# - timezone
- - runcmd
+  - emit_upstart
+  - snap
+  - ssh-import-id
+  - locale
+  - set-passwords
+  - grub-dpkg
+  - apt-pipelining
+  - apt-configure
+  - ntp
+  - timezone
+  - runcmd
 
 cloud_final_modules:
   - package-update-upgrade-install
-# timezone
-  - timezone
   - fan
   - lxd
   - ubuntu-drivers
