@@ -8,6 +8,16 @@
       apt:
         autoremove: yes
 
+- name: install dependencies
+  apt:
+    packages:
+      # - lxc
+      # # for lxc, some for unprivileged container support
+      # - debootstrap
+      # - bridge-utils
+      # - libvirt0
+      # - libpam-cgfs
+
 - name: setup network
   block:
     - name: copy templated /etc/netplan config

@@ -1,4 +1,6 @@
-.PHONY: bootstrap, lint, generate-key, packer-build, ansible-remote-provision, distrobuilder-bootstrap, distrobuilder-package
+.PHONY: bootstrap, lint generate-key, packer-build \
+	ansible-remote-provision distrobuilder-bootstrap \
+	distrobuilder-package distrobuilder-generate-and-package
 
 default: lint
 
@@ -40,10 +42,13 @@ ansible-remote-provision:
 
 
 # distrobuilder
-distrobuilder-bootstrap:
+distrobuilder-generate:
 	cd distrobuilder && test -d rootfs && sudo rm -rf rootfs && mkdir rootfs || true
 	cd distrobuilder && sudo distrobuilder build-dir distrobuilder.yaml rootfs
 
 distrobuilder-package:
 # packaged image will be imported to lxc via ansible
 	cd distrobuilder && sudo distrobuilder pack-lxd distrobuilder.yaml rootfs/ artifacts/
+
+distrobuilder-generate-and-package:
+	cd distrobuilder && sudo distrobuilder build-lxd distrobuilder.yaml artifacts/

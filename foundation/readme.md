@@ -1,6 +1,6 @@
 # foundation
 
-`foundation` runs important network-critical programs (dns, dhcp) and provides and environment to bootstrap configuration on other computers. this pysical machine runs debian 10 (buster) and creates lxd machine containers called `first`, `second`, and `third` to provide functionality:
+`foundation` runs important network-critical programs (dns, dhcp) and provides and environment to bootstrap configuration on other computers. this pysical machine runs debian 10 (buster) and creates lxd machine containers called `foundation-container-{first,second,third}`, to provide functionality:
 
 1. `first` contains the kea dhcp4, kea ddns, and bind9 dns server
 2. `second` contains terraform, ansible, and distrobuilder, and a git clone of this repository
