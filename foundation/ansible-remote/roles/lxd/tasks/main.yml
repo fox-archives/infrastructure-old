@@ -41,44 +41,6 @@
         parent: br0
 
 # TODO: use 100000 | random | to_uuid | upper
-# - name: create containers
-#   block:
-#     - name: generate unique ids
-#       # uuidgen not in util-linux for debian stretch...
-#       shell: dbus-uuidgen
-#       with_sequence: count={{ containerNames | length }}
-#       register: uuid_list
-#     - name: debug
-#       debug:
-#         msg: '{{ uuid_list.results}}'
-#         verbosity: 3
-#     - name: create and wait for lxd containers
-#       block:
-#         - name: create lxd containers
-#           lxd_container:
-#             name: '{{ containerNamePrefix }}{{ item }}'
-#             architecture: x86_64
-#             config:
-#               'user.fqdn': '{{ item }}.{{ domainName }}'
-#               'user.hostname': '{{ item }}'
-#               'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
-#               'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
-#             ephemeral: no
-#             source:
-#               type: image
-#               mode: pull
-#               protocol: lxd
-#               alias: '{{ imageName }}'
-#             profiles:
-#               - '{{ profileName }}'
-#             wait_for_ipv4_addresses: true
-#             state: started
-#         - name: small pause
-#           pause:
-#             seconds: 3
-#       loop: '{{ containerNames }}'
-#       loop_control:
-#         index_var: i
 - name: create containers
   block:
     - name: generate unique ids
@@ -90,26 +52,29 @@
       debug:
         msg: '{{ uuid_list.results}}'
         verbosity: 3
-    - name: create and wait for lxd containers
-      block:
-        - name: create lxd containers
-          lxd_container:
-            name: '{{ containerNamePrefix }}{{ iitem }}'
-            architecture: x86_64
-            config:
-              'user.fqdn': '{{ iitem }}.{{ domainName }}'
-              'user.hostname': '{{ iitem }}'
-              'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
-              'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
-            ephemeral: no
-            source:
-              type: image
-              mode: pull
-              url: https://127.0.0.1:8443
-              protocol: lxd
-              alias: '{{ imageName }}'
-              state: present
-            profiles:
-              - '{{ profileName }}'
-            wait_for_ipv4_addresses: true
-            state: started
+    - name: create lxd containers
+      lxd_container:
+        name: '{{ containerNamePrefix }}{{ item }}'
+        architecture: x86_64
+        config:
+          'user.fqdn': '{{ item }}.{{ domainName }}'
+          'user.hostname': '{{ item }}'
+          'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
+          'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
+        ephemeral: no
+        source:
+          type: image
+          mode: pull
+          protocol: lxd
+          alias: '{{ imageName }}'
+        profiles:
+          - '{{ profileName }}'
+        wait_for_ipv4_addresses: yes
+        state: started
+      loop: '{{ containerNames }}'
+      loop_control:
+        index_var: i
+      # TODO: fix error
+      # error causes lxd daemon to
+      # crash and restart
+      ignore_errors: yes

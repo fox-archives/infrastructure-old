@@ -3,11 +3,11 @@ package_update: true
 package_upgrade: true
 locale: en_US.UTF-8
 timezone: America/Los_Angelos
-final_message: ${hostname} is finally up after $UPTIME at $TIMESTAMP
+final_message: {{ item }} is finally up after $UPTIME at $TIMESTAMP
 manage_etc_hosts: true
 preserve_hostname: false
-fqdn: '{{ iitem }}.{{ domainName }}'
-hostname: '{{ iitem }}'
+fqdn: '{{ item }}.{{ domainName }}'
+hostname: '{{ item }}'
 
 packages:
   - sudo
