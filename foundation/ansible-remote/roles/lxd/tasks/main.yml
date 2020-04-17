@@ -1,64 +1,115 @@
 ---
-# commented code tests to see if lxd has been initialized, and registers a variable. because `lxd init --auto`
-# appears to be a no-op if it has been already initialized, we just leave it in the play unconditionally
+- name: ensure prerequisites
+  import_tasks: prerequisites.yml
 
-# - name: test if lxd is enabled
-#   shell: systemctl status lxd >/dev/null 2>&1; if [ $? -eq 4 ]; then echo notInitialized; else echo initialized; fi
-#   register: isLxdInitiated
+- name: import lxc image built with distrobuilder
+  import_role:
+    name: distrobuilder
 
-- name: create lxd group
-  group:
-    name: lxd
-    state: present
-
-- name: add ops to lxd group
-  user:
-    name: ops
-    comment: ops
-    append: yes
-    groups:
-      - ops
-      - lxd
-
-- name: install snapd apt package
-  apt:
-    name: snapd
-    state: present
-
-# this prevents an error (implicit dependency on core?)
-# this also tests basic snap functionality
-- name: install snap hello-world
-  snap:
-    name: hello-world
-    classic: no
-    state: present
-
-- name: install lxd snap package
-  snap:
-    name: lxd
-    classic: yes
-    state: present
-
-- name: initialize lxd
-  command: lxd init --auto
-
-- name: ensure lxd is functional
+- name: import custom base image
   block:
-    - name: download test image
-      lxd_container:
-        name: debian-base
-        state: started
-        source:
-          type: image
-          mode: pull
-          server: https://images.linuxcontainers.org
-          protocol: simplestreams
-          alias: debian/stretch
-    - name: stop test image
-      lxd_container:
-        name: debian-base
-        state: stopped
+    - name: delete previous image (if exists)
+      # '|| true' required so ansible doesn't fail if image does not exist
+      raw: lxc image delete {{ imageName }} || true
+    - name: import new image
+      command: lxc image import {{ imageArtifacts }}/lxd.tar.xz {{ imageArtifacts }}/rootfs.squashfs --alias {{ imageName }}
 
-# - name: import lxc image via distrobuilder
-#   import_role:
-#     name: distrobuilder
+- name: create lxd profile
+  lxd_profile:
+    name: '{{ profileName }}'
+    # config: "{{ dict((lookup('file', 'lxd-profile-devices.yaml') | to_yaml)) }}"
+    config:
+      'boot.autostart': 'true'
+      'boot.host_shutdown_timeout': '20'
+      'limits.cpu.allowance': '50%'
+      'limits.cpu.priority': '10' # default
+      'limits.disk.priority': '7'
+      'limits.memory': '50%'
+      'limits.memory.enforce': 'soft'
+      'limits.memory.swap': 'true'
+      'limits.memory.swap.priority': '10' # default
+      'limits.network.priority': '3'
+      'security.nesting': 'false'
+    devices:
+      root:
+        type: disk
+        pool: default
+        path: /
+      br0:
+        type: nic
+        nictype: bridged
+        parent: br0
+
+# TODO: use 100000 | random | to_uuid | upper
+# - name: create containers
+#   block:
+#     - name: generate unique ids
+#       # uuidgen not in util-linux for debian stretch...
+#       shell: dbus-uuidgen
+#       with_sequence: count={{ containerNames | length }}
+#       register: uuid_list
+#     - name: debug
+#       debug:
+#         msg: '{{ uuid_list.results}}'
+#         verbosity: 3
+#     - name: create and wait for lxd containers
+#       block:
+#         - name: create lxd containers
+#           lxd_container:
+#             name: '{{ containerNamePrefix }}{{ item }}'
+#             architecture: x86_64
+#             config:
+#               'user.fqdn': '{{ item }}.{{ domainName }}'
+#               'user.hostname': '{{ item }}'
+#               'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
+#               'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
+#             ephemeral: no
+#             source:
+#               type: image
+#               mode: pull
+#               protocol: lxd
+#               alias: '{{ imageName }}'
+#             profiles:
+#               - '{{ profileName }}'
+#             wait_for_ipv4_addresses: true
+#             state: started
+#         - name: small pause
+#           pause:
+#             seconds: 3
+#       loop: '{{ containerNames }}'
+#       loop_control:
+#         index_var: i
+- name: create containers
+  block:
+    - name: generate unique ids
+      # uuidgen not in util-linux for debian stretch...
+      shell: dbus-uuidgen
+      with_sequence: count={{ containerNames | length }}
+      register: uuid_list
+    - name: debug
+      debug:
+        msg: '{{ uuid_list.results}}'
+        verbosity: 3
+    - name: create and wait for lxd containers
+      block:
+        - name: create lxd containers
+          lxd_container:
+            name: '{{ containerNamePrefix }}{{ iitem }}'
+            architecture: x86_64
+            config:
+              'user.fqdn': '{{ iitem }}.{{ domainName }}'
+              'user.hostname': '{{ iitem }}'
+              'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
+              'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
+            ephemeral: no
+            source:
+              type: image
+              mode: pull
+              url: https://127.0.0.1:8443
+              protocol: lxd
+              alias: '{{ imageName }}'
+              state: present
+            profiles:
+              - '{{ profileName }}'
+            wait_for_ipv4_addresses: true
+            state: started

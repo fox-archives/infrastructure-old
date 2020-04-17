@@ -10,16 +10,8 @@
 - name: copy distrobuilder files
   synchronize:
     src: ./
-    dest: '{{ rootArtifacts }}'
+    dest: '{{ imageArtifacts }}'
     copy_links: yes
     recursive: yes
     delete: yes
-
-- name: import custom base image
-  block:
-    - name: delete previous image (if exists)
-      # '|| true' required so ansible doesn't fail if image does not exist
-      raw: lxc image delete {{ imageName }} || true
-    - name: import new image
-      command: lxc image import {{ rootArtifacts }}/lxd.tar.xz {{ rootArtifacts }}/rootfs.squashfs --alias {{ imageName}}
 

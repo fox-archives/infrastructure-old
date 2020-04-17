@@ -4,3 +4,6 @@
 
 - name: config systemd
   import_tasks: systemd.yml
+
+- name: config systemd
+  import_tasks: files.yml

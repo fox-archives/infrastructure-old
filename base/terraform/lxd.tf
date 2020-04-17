@@ -40,7 +40,7 @@ resource "lxd_profile" "corsac_profile" {
   config = {
     "boot.autostart"              = true,
     "boot.host_shutdown_timeout"  = 20
-    "limits.cpu.allowance"        = "50%"
+    "limits.cpu.allowance"        = "70%"
     "limits.memory"               = "50%"
     "limits.memory.enforce"       = "soft"
     "limits.memory.swap"          = true

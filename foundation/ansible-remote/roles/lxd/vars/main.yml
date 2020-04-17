@@ -1,0 +1,8 @@
+---
+imageName: debian-base-custom
+profileName: infrastructure-profile
+containerNamePrefix: infrastructure-container-
+containerNames:
+  - eins
+  - zwei
+iitem: eins

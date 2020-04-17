@@ -4,11 +4,10 @@
   hosts: foundation
   gather_facts: true
   vars:
-    networkInterface2: enp7s0f1
     rootArtifacts: /home/ops/ansible
-    imageName: debian-base-custom
-    containerName1: debian-one
-    containerName2: debian-two
+    imageArtifacts: '{{ rootArtifacts }}/image'
+    configArtifacts: '{{ rootArtifacts }}/config'
+    domainName: 'dynamic.local.internal.kofler.dev'
   roles:
     - role: common
       tags: common
@@ -18,5 +17,3 @@
       tags: network
     - role: lxd
       tags: lxd
-    - role: distrobuilder
-      tags: distrobuilder

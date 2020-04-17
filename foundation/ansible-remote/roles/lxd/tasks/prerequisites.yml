@@ -1,0 +1,60 @@
+---
+# commented code tests to see if lxd has been initialized, and registers a variable. because `lxd init --auto`
+# appears to be a no-op if it has been already initialized, we just leave it in the play unconditionally
+
+# - name: test if lxd is enabled
+#   shell: systemctl status lxd >/dev/null 2>&1; if [ $? -eq 4 ]; then echo notInitialized; else echo initialized; fi
+#   register: isLxdInitiated
+
+- name: create lxd group
+  group:
+    name: lxd
+    state: present
+
+- name: add ops to lxd group
+  user:
+    name: ops
+    comment: ops
+    append: yes
+    groups:
+      - ops
+      - lxd
+
+- name: install snapd apt package
+  apt:
+    name: snapd
+    state: present
+
+# this prevents an error (implicit dependency on core?)
+# this also tests basic snap functionality
+- name: install snap hello-world
+  snap:
+    name: hello-world
+    classic: no
+    state: present
+
+- name: install lxd snap package
+  snap:
+    name: lxd
+    classic: yes
+    state: present
+
+- name: initialize lxd
+  command: lxd init --auto
+
+- name: ensure lxd is functional
+  block:
+    - name: download test image
+      lxd_container:
+        name: debian-base
+        state: started
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org
+          protocol: simplestreams
+          alias: debian/stretch
+    - name: stop test image
+      lxd_container:
+        name: debian-base
+        state: stopped

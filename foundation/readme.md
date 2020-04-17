@@ -25,8 +25,13 @@ note that setting the `rootPassword` and/or `opsPassword` variables are not stri
 
 ```sh
 make bootstrap
-make foundation-build
+make packer-build
 # now, dd the image in `packer/artifacts` to the metal
 # on the tty, or from ssh's pty, resize partitions and vgs/lvs
-rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make foundation-provision
+
+# create artifacts required for `ansible-remote-provision`
+make distrobuilder-bootstrap
+make distrobuilder-package
+
+rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make ansible-remote-provision
 ```
