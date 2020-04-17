@@ -1,37 +1,54 @@
 # foundation
 
-`foundation` is the master node, from which all other nodes are orchestrated from, at least indirectly. `packer` is responsible for building the server image. `ansible-remote` is responsible for provisioning the machine. `foundation` has a static ip of `10.0.0.2`. it spawns two lxd machine containers (to spare vtax). the machine provisioning `foundation` requires packer, ansible, and distrobuilder
+`foundation` runs important network-critical programs (dns, dhcp) and provides and environment to bootstrap configuration on other computers. this pysical machine runs debian 10 (buster) and creates lxd machine containers called `first`, `second`, and `third` to provide functionality:
 
-1. kea dhcp4, kea ddns, and bind9 dns server
-2. terraform, ansible, and distrobuilder, and a git clone of this repository
+1. `first` contains the kea dhcp4, kea ddns, and bind9 dns server
+2. `second` contains terraform, ansible, and distrobuilder, and a git clone of this repository
+3. `third` is yet to be used
 
 ## packer
 
-`foundation` is an ubuntu 18.04 server. the image is build with packer, which is configured to use the qemu builder and `ansible-local` provisioner. notably, it configures the network and sshd; further setup is done during `ansible-remote`. you need to `dd` the resulting iso to your machine
-
-in addition to root, it creates an `ops` user, with passwords `root-password` and `user-password`, respectively. the image configured to only allow non-root login, authenticated only with public keys. These temporary passwords can optionally be changed during remote provisioning
+- the image is build with packer, and must be `dd`'ed to the metal manually
+- packer uses the qemu builder (code in `packer/debian.json`), which eventually starts the ansible-local provisioner (code in `packer/ansible-local`)
+- the ansible-local provisioner:
+  - sets up network partially and sshd
+  - creates users and their passwords
 
 ## ansible-remote
 
-remotely provisions `foundation`. this prepares system for `lxd` and creates a network interface bridge. i created the `rotate-screen.service` because i use a monitor that's rotated 90 degrees for troubleshooting when the network is down. to do this, `foundation` needs to be accessible at `10.0.0.2` using `foundation.key`
+- further config is done with ansible remotely (code in `ansible-remote`)
+- it finishes network config (creates bridged network device)
+- does other miscellaneous configuration
+- starts the three lxd containers
 
 ## distrobuilder
 
-builds lxc images for `foundation`.
+- lxd container images build with distrobuilder (code in `distrobuilder`)
 
 ## usage
 
 note that setting the `rootPassword` and/or `opsPassword` variables are not strictly required
 
 ```sh
+# bootstrap
 make bootstrap
+
+# first: generate ssh keys for host machine
+make generate-host-key
+
+# second: build images with packer
 make packer-build
 # now, dd the image in `packer/artifacts` to the metal
 # on the tty, or from ssh's pty, resize partitions and vgs/lvs
 
-# create artifacts required for `ansible-remote-provision`
+# third: create artifacts required for remote ansible provisioning
 make distrobuilder-bootstrap
 make distrobuilder-package
 
+# fourth: generate keys for each guest container
+make generate-guest-keys
+
+# fifth: remotely provision host machine
+# TODO: rootPassword and opsPassword have no effect and should later not be passed at all
 rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make ansible-remote-provision
 ```

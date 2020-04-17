@@ -1,4 +1,4 @@
-.PHONY: bootstrap, lint, generate-key, packer-build, ansible-remote-provision, ansible-local-provision
+.PHONY: bootstrap, lint, generate-key, packer-build, ansible-remote-provision, distrobuilder-bootstrap, distrobuilder-package
 
 default: lint
 
@@ -9,15 +9,19 @@ bootstrap:
 lint:
 	@echo
 
+
 # root (misc)
 keyFileName = foundation.key
-generate-key:
+generate-host-key:
 ifeq ("$(wildcard $(keyFileName))","")
 	ssh-keygen -t ed25519 -f ${keyFileName}
 endif
 	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/${keyFileName}.pub
 	cp ${keyFileName} ansible-remote/${keyFileName}
 	cp ${keyFileName} ansible-local/${keyFileName}
+
+generate-guest-keys:
+	./generateKeys.sh
 
 
 # packer

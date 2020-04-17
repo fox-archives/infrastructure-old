@@ -1,0 +1,7 @@
+---
+# cloud-config.service and systemd-journald-audit.socket
+# are in failed states
+
+# - name: restart failed jobs
+#   command: systemctl reset-failed
+[]

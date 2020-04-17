@@ -17,3 +17,5 @@
       tags: network
     - role: lxd
       tags: lxd
+    - role: post
+      tags: post

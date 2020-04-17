@@ -7,6 +7,319 @@ image:
   architecture: x86_64
   variant: cloud
 
+mappings:
+  architecture_map: debian
+
+targets:
+  lxc:
+    create-message: |-
+      you just created a {{ image.description }} container
+
+    config:
+      - type: all
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/debian.common.conf
+
+      - type: user
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/debian.userns.conf
+
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+      - type: all
+        content: |-
+          lxc.arch = {{ image.architecture_personality }}
+
+# remember that config_get is processed by lcd
+files:
+  - path: /etc/hostname
+    generator: template
+    name: hostname
+    content: |-
+      {{ config_get("user.hostname", "localhost") }}
+
+  - path: /etc/hosts
+    generator: template
+    name: hosts
+    content: |-
+      127.0.0.1	{{ config_get("user.fqdn", "localhost.localdomain") }}   {{ config_get("user.hostname", "localhost") }}
+
+  - path: /etc/resolvconf/resolv.conf.d/original
+    generator: remove
+
+  - path: /etc/resolvconf/resolv.conf.d/tail
+    generator: remove
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /var/lib/dbus/machine-id
+    generator: remove
+
+  - path: /etc/network/interfaces
+    generator: dump
+    content: |-
+      # this file describes the network interfaces available on your system
+      # and how to activate them. for more information, see interfaces(5)
+
+      auto lo
+      iface lo inet loopback
+
+      auto eth0
+      iface eth0 inet dhcp
+
+      source /etc/network/interfaces.d/*.cfg
+    types:
+      - container
+
+  # - path: /etc/network/interfaces
+  #   generator: dump
+  #   content: |-
+  #     # this file describes the network interfaces available on your system
+  #     # and how to activate them. for more information, see interfaces(5)
+
+  #     auto lo
+  #     iface lo inet loopback
+
+  #     auto enp5s0
+  #     iface enp5s0 inet dhcp
+
+  #     source /etc/network/interfaces.d/*.cfg
+  #   types:
+  #     - vm
+  #   releases:
+  #     - stretch
+  #     - buster
+  #     - bullseye
+  #     - sid
+
+  - path: /etc/default/grub.d/50-lxd.cfg
+    generator: dump
+    content: |-
+      # Set the recordfail timeout
+      GRUB_RECORDFAIL_TIMEOUT=0
+
+      # Do not wait on grub prompt
+      GRUB_TIMEOUT=0
+
+      # Set the default commandline
+      GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} console=tty1 console=ttyS0"
+
+      # Set the grub console type
+      GRUB_TERMINAL=console
+    types:
+      - vm
+
+  - path: /var/lib/cloud/seed/nocloud-net/user-data
+    generator: template
+    name: cloud-init-user
+    content: |-
+      {{ config_get("user.user-data", properties.default) }}
+    template:
+      when:
+        - copy
+        - create
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
+      - cloud
+
+  - path: /var/lib/cloud/seed/nocloud-net/meta-data
+    generator: template
+    name: cloud-init-meta
+    content: |-
+      instance-id: {{ container.name }}
+      local-hostname: {{ config_get("user.hostname", "localhost") }}
+      {{ config_get("user.meta-data", "") }}
+    template:
+      when:
+        - create
+        - copy
+    variant:
+      - cloud
+
+  - path: /var/lib/cloud/seed/nocloud-net/network-config
+    generator: template
+    name: cloud-init-network
+    content: |-
+      {% if config_get("user.network-config", "") == "" %}version: 1
+      config:
+        - type: physical
+          name: eth0
+          subnets:
+            - type: {% if config_get("user.network_mode", "") == "link-local" %}manual{% else %}dhcp{% endif %}
+              control: auto{% else %}{{ config_get("user.network-config", "") }}{% endif %}
+    template:
+      when:
+        - create
+        - copy
+    variant:
+      - cloud
+
+  - path: /var/lib/cloud/seed/nocloud-net/vendor-data
+    generator: template
+    name: cloud-init-vendor
+    content: |-
+      {{ config_get("user.vendor-data", properties.default) }}
+    template:
+      when:
+        - create
+        - copy
+      properties:
+        default: |
+          #cloud-config
+          {}
+    variant:
+      - cloud
+
+  # - name: lxd-agent
+  #   generator: lxd-agent
+  #   types:
+  #     - vm
+  # - generator: fstab
+  #   types:
+  #     - vm
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        # - dialog
+        # - ifupdown
+        # - init
+        # - iproute2
+        # - locales
+        # - netbase
+        - openssh-server
+        - vim.tiny
+      action: install
+
+    - packages:
+        - cloud-init
+      action: install
+      variants:
+        - cloud
+
+    - packages:
+        - acpid
+      action: install
+      architectures:
+        - amd64
+        - arm64
+      types:
+        - vm
+
+    - packages:
+        - grub-efi
+      action: install
+      types:
+        - vm
+      architectures:
+        - amd64
+
+    - packages:
+        - linux-image-amd64
+      action: install
+      types:
+        - vm
+      architectures:
+        - amd64
+      releases:
+        - stretch
+        - buster
+        - bullseye
+        - sid
+
+    - packages:
+        - shim-signed
+      action: install
+      types:
+        - vm
+      releases:
+        - buster
+        - bullseye
+        - sid
+
+  repositories:
+    - name: sources.list
+      url: |-
+        deb http://deb.debian.org/debian {{ image.release }} main
+        {% if image.release != "sid" and image.release != "bullseye" and not (image.release == "wheezy" and image.architecture_mapped == "powerpc") and not (image.release == "wheezy" and image.architecture_mapped == "s390x") %}deb http://security.debian.org/debian-security {{ image.release }}/updates main{% endif %}
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      # disable networkd (unused)
+      systemctl mask systemd-networkd.service
+      systemctl mask systemd-networkd.socket
+      systemctl mask systemd-networkd-wait-online.service
+
+      # make sure the locale is built and functional
+      echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+      locale-gen en_US.UTF-8 UTF-8
+      update-locale LANG=en_US.UTF-8
+
+      # cleanup underlying /run
+      mount -o bind / /mnt
+      rm -rf /mnt/run/*
+      umount /mnt
+
+      # cleanup temporary shadow paths
+      rm /etc/*-
+  # - trigger: post-files
+  #   action: |-
+  #     #!/bin/sh
+  #     set -eux
+  #     TARGET="x86_64"
+  #     [ "$(uname -m)" = "aarch64" ] && TARGET="arm64"
+  #     update-grub
+  #     # This will create EFI/BOOT
+  #     grub-install --uefi-secure-boot --target="${TARGET}-efi" --no-nvram --removable
+  #     # This will create EFI/debian
+  #     grub-install --uefi-secure-boot --target="${TARGET}-efi" --no-nvram
+  #     update-grub
+  #     sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub/grub.cfg
+  #   types:
+  #     - vm
+  #   releases:
+  #     - buster
+  #     - bullseye
+  #     - sid
+  # - trigger: post-files
+  #   action: |-
+  #     #!/bin/sh
+  #     set -eux
+  #     TARGET="x86_64"
+  #     [ "$(uname -m)" = "aarch64" ] && TARGET="arm64"
+  #     update-grub
+  #     # This will create EFI/BOOT
+  #     grub-install --target="${TARGET}-efi" --no-nvram --removable --modules="part_gpt"
+  #     # This will create EFI/debian
+  #     grub-install --target="${TARGET}-efi" --no-nvram --modules="part_gpt"
+  #     update-grub
+  #     sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub/grub.cfg
+  #   types:
+  #     - vm
+  #   releases:
+  #     - jessie
+  #     - stretch
+
 source:
   downloader: debootstrap
   url: http://deb.debian.org/debian
@@ -787,334 +1100,3 @@ source:
       =lfn1
       -----END PGP PUBLIC KEY BLOCK-----
   variant: minbase
-
-targets:
-  lxc:
-    create-message: |-
-      you just created a {{ image.description }} container
-
-    config:
-      - type: all
-        before: 5
-        content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/debian.common.conf
-
-      - type: user
-        before: 5
-        content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/debian.userns.conf
-
-      - type: all
-        after: 4
-        content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
-
-      - type: user
-        after: 4
-        content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
-      - type: all
-        content: |-
-          lxc.arch = {{ image.architecture_personality }}
-
-# remember that config_get is processed by lcd
-files:
-  - path: /etc/hostname
-    generator: template
-    name: hostname
-    content: |-
-      {{ config_get("user.hostname", "localhost") }}
-
-  - path: /etc/hosts
-    generator: template
-    name: hosts
-    content: |-
-      127.0.0.1	{{ config_get("user.fqdn", "localhost.localdomain") }}   {{ config_get("user.hostname", "localhost") }}
-
-  - path: /etc/resolvconf/resolv.conf.d/original
-    generator: remove
-
-  - path: /etc/resolvconf/resolv.conf.d/tail
-    generator: remove
-
-  - path: /etc/machine-id
-    generator: dump
-
-  - path: /var/lib/dbus/machine-id
-    generator: remove
-
-  - path: /etc/network/interfaces
-    generator: dump
-    content: |-
-      # this file describes the network interfaces available on your system
-      # and how to activate them. for more information, see interfaces(5)
-
-      auto lo
-      iface lo inet loopback
-
-      auto eth0
-      iface eth0 inet dhcp
-
-      source /etc/network/interfaces.d/*.cfg
-    types:
-      - container
-
-  # - path: /etc/network/interfaces
-  #   generator: dump
-  #   content: |-
-  #     # this file describes the network interfaces available on your system
-  #     # and how to activate them. for more information, see interfaces(5)
-
-  #     auto lo
-  #     iface lo inet loopback
-
-  #     auto enp5s0
-  #     iface enp5s0 inet dhcp
-
-  #     source /etc/network/interfaces.d/*.cfg
-  #   types:
-  #     - vm
-  #   releases:
-  #     - stretch
-  #     - buster
-  #     - bullseye
-  #     - sid
-
-  - path: /etc/default/grub.d/50-lxd.cfg
-    generator: dump
-    content: |-
-      # Set the recordfail timeout
-      GRUB_RECORDFAIL_TIMEOUT=0
-
-      # Do not wait on grub prompt
-      GRUB_TIMEOUT=0
-
-      # Set the default commandline
-      GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} console=tty1 console=ttyS0"
-
-      # Set the grub console type
-      GRUB_TERMINAL=console
-    types:
-      - vm
-
-  - path: /var/lib/cloud/seed/nocloud-net/user-data
-    generator: template
-    name: cloud-init-user
-    content: |-
-      {{ config_get("user.user-data", properties.default) }}
-    template:
-      when:
-        - copy
-        - create
-      properties:
-        default: |
-          #cloud-config
-          {}
-    variant:
-      - cloud
-
-  - path: /var/lib/cloud/seed/nocloud-net/meta-data
-    generator: template
-    name: cloud-init-meta
-    content: |-
-      instance-id: {{ container.name }}
-      local-hostname: {{ config_get("user.hostname", "localhost") }}
-      {{ config_get("user.meta-data", "") }}
-    template:
-      when:
-        - create
-        - copy
-    variant:
-      - cloud
-
-  - path: /var/lib/cloud/seed/nocloud-net/network-config
-    generator: template
-    name: cloud-init-network
-    content: |-
-      {% if config_get("user.network-config", "") == "" %}version: 1
-      config:
-        - type: physical
-          name: eth0
-          subnets:
-            - type: {% if config_get("user.network_mode", "") == "link-local" %}manual{% else %}dhcp{% endif %}
-              control: auto{% else %}{{ config_get("user.network-config", "") }}{% endif %}
-    template:
-      when:
-        - create
-        - copy
-    variant:
-      - cloud
-
-  - path: /var/lib/cloud/seed/nocloud-net/vendor-data
-    generator: template
-    name: cloud-init-vendor
-    content: |-
-      {{ config_get("user.vendor-data", properties.default) }}
-    template:
-      when:
-        - create
-        - copy
-      properties:
-        default: |
-          #cloud-config
-          {}
-    variant:
-      - cloud
-
-  # - name: lxd-agent
-  #   generator: lxd-agent
-  #   types:
-  #     - vm
-
-  # - generator: fstab
-  #   types:
-  #     - vm
-
-packages:
-  manager: apt
-  update: true
-  cleanup: true
-  sets:
-    - packages:
-        - dialog
-        - ifupdown
-        - init
-        - iproute2
-        - isc-dhcp-client
-        - locales
-        - netbase
-        - net-tools
-        - openssh-client
-        - vim
-      action: install
-
-    - packages:
-        - cloud-init
-      action: install
-      variants:
-        - cloud
-
-    - packages:
-        - acpid
-      action: install
-      architectures:
-        - amd64
-        - arm64
-      types:
-        - vm
-
-    - packages:
-        - grub-efi
-      action: install
-      types:
-        - vm
-      architectures:
-        - amd64
-
-    - packages:
-        - linux-image-amd64
-      action: install
-      types:
-        - vm
-      architectures:
-        - amd64
-      releases:
-        - stretch
-        - buster
-        - bullseye
-        - sid
-
-    - packages:
-        - grub-efi-arm64
-        - linux-image-arm64
-      action: install
-      types:
-        - vm
-      architectures:
-        - arm64
-
-    - packages:
-        - shim-signed
-      action: install
-      types:
-        - vm
-      releases:
-        - buster
-        - bullseye
-        - sid
-
-  repositories:
-    - name: sources.list
-      url: |-
-        deb http://deb.debian.org/debian {{ image.release }} main
-        {% if image.release != "sid" and image.release != "bullseye" and not (image.release == "wheezy" and image.architecture_mapped == "powerpc") and not (image.release == "wheezy" and image.architecture_mapped == "s390x") %}deb http://security.debian.org/debian-security {{ image.release }}/updates main{% endif %}
-
-actions:
-  - trigger: post-packages
-    action: |-
-      #!/bin/sh
-      set -eux
-
-      # Disable networkd (unused)
-      systemctl mask systemd-networkd.service
-      systemctl mask systemd-networkd.socket
-      systemctl mask systemd-networkd-wait-online.service
-
-      # Make sure the locale is built and functional
-      echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
-      locale-gen en_US.UTF-8 UTF-8
-      update-locale LANG=en_US.UTF-8
-
-      # Cleanup underlying /run
-      mount -o bind / /mnt
-      rm -rf /mnt/run/*
-      umount /mnt
-
-      # Cleanup temporary shadow paths
-      rm /etc/*-
-
-  # - trigger: post-files
-  #   action: |-
-  #     #!/bin/sh
-  #     set -eux
-
-  #     TARGET="x86_64"
-  #     [ "$(uname -m)" = "aarch64" ] && TARGET="arm64"
-
-  #     update-grub
-  #     # This will create EFI/BOOT
-  #     grub-install --uefi-secure-boot --target="${TARGET}-efi" --no-nvram --removable
-  #     # This will create EFI/debian
-  #     grub-install --uefi-secure-boot --target="${TARGET}-efi" --no-nvram
-  #     update-grub
-  #     sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub/grub.cfg
-  #   types:
-  #     - vm
-  #   releases:
-  #     - buster
-  #     - bullseye
-  #     - sid
-
-  # - trigger: post-files
-  #   action: |-
-  #     #!/bin/sh
-  #     set -eux
-
-  #     TARGET="x86_64"
-  #     [ "$(uname -m)" = "aarch64" ] && TARGET="arm64"
-
-  #     update-grub
-  #     # This will create EFI/BOOT
-  #     grub-install --target="${TARGET}-efi" --no-nvram --removable --modules="part_gpt"
-  #     # This will create EFI/debian
-  #     grub-install --target="${TARGET}-efi" --no-nvram --modules="part_gpt"
-  #     update-grub
-  #     sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub/grub.cfg
-  #   types:
-  #     - vm
-  #   releases:
-  #     - jessie
-  #     - stretch
-
-mappings:
-  architecture_map: debian
