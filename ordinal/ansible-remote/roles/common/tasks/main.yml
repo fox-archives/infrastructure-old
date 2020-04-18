@@ -1,0 +1,6 @@
+---
+- name: config network
+  import_tasks: network.yml
+
+- name: config packages
+  import_tasks: packages.yml

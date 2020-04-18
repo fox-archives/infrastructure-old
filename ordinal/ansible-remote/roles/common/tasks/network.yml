@@ -1,0 +1,5 @@
+---
+- name: remove cloud init network config
+  file:
+    path: /etc/network/interfaces.d/50-cloud-init.cfg
+    state: absent

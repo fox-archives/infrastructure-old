@@ -5,5 +5,5 @@
 - name: config systemd
   import_tasks: systemd.yml
 
-- name: config systemd
+- name: config files
   import_tasks: files.yml

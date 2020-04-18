@@ -194,6 +194,8 @@ files:
     types:
       - vm
 
+# other packages defined in
+# ansible-remote/roles/common/tasks/package.yml
 packages:
   manager: apt
   update: true

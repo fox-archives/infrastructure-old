@@ -1,5 +1,5 @@
 ---
-- name: configure foundation
+- name: configure foundation host
   become: true
   hosts: foundation
   gather_facts: true

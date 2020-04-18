@@ -1,0 +1,8 @@
+---
+# other packages are defined in
+# distrobuilder/distrobuilder.yaml
+- name: install packages
+  apt:
+    name:
+      - sudo
+    state: present
