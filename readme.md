@@ -12,6 +12,8 @@ the plan is to create ubuntu lxd machine containers on several of my physical ma
 
 ## installation
 
+some make commands depend on make commands from other folders to be executed (ex. you must create public keys in `/ordinal` before the remote ansible provisioning in `/foundation`). these dependencies are checked for the commands that require them, and will error (and output useful info to console) if unsatisfied
+
 ```sh
 git clone https://github.com/eankeen/corsac
 cd "corsac/$folder"
