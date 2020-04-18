@@ -1,0 +1,6 @@
+---
+- name: reboot
+  reboot:
+    connect_timeout: 20
+    msg: reboot initiated by ansible
+    reboot_timeout: 3000

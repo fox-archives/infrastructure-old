@@ -20,19 +20,17 @@ system_info:
     lock_passwd: false
     gecos: opts
     groups:
-      [
-        adm,
-        audio,
-        cdrom,
-        dialout,
-        dip,
-        floppy,
-        lxd,
-        netdev,
-        plugdev,
-        sudo,
-        video,
-      ]
+      - adm
+      - audio
+      - cdrom
+      - dialout
+      - dip
+      - floppy
+      - lxd
+      - netdev
+      - plugdev
+      - sudo
+      - video
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
     shell: /bin/bash
     ssh_authorized_keys:

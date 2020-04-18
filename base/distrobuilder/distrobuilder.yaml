@@ -149,14 +149,14 @@ packages:
 
   sets:
     - packages:
-      - apt-transport-https
-      - language-pack-en
-      - openssh-client
-      - neovim
+        - apt-transport-https
+        - language-pack-en
+        - openssh-client
+        - neovim
       action: install
 
     - packages:
-      - cloud-init
+        - cloud-init
       action: install
       variants:
         - cloud

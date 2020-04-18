@@ -43,24 +43,31 @@
 # TODO: use 100000 | random | to_uuid | upper
 - name: create containers
   block:
-    - name: generate unique ids
-      # uuidgen not in util-linux for debian stretch...
-      shell: dbus-uuidgen
-      with_sequence: count={{ containerNames | length }}
-      register: uuid_list
-    - name: debug
-      debug:
-        msg: '{{ uuid_list.results}}'
-        verbosity: 3
-    - name: create lxd containers
+    # - name: generate unique ids
+    #   # uuidgen not in util-linux for debian stretch...
+    #   shell: dbus-uuidgen
+    #   with_sequence: count={{ containerNames | length }}
+    #   register: uuid_list
+    # - name: debug
+    #   debug:
+    #     msg: '{{ uuid_list.results}}'
+    #     verbosity: 3
+    - name: create primary container
       lxd_container:
-        name: '{{ containerNamePrefix }}{{ item }}'
+        name: '{{ containerNamePrefix }}{{ item.name }}'
         architecture: x86_64
         config:
-          'user.fqdn': '{{ item }}.{{ domainName }}'
-          'user.hostname': '{{ item }}'
+          'user.fqdn': '{{ item.name }}.{{ domainName }}'
+          'user.hostname': '{{ item.name }}'
           'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
           'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
+          # remember: user.ifupdown.* are 'variables' we attach to machine
+          # at creation. lxd resolves them (we choose how they are resolved in
+          # distrobuilder.yaml)
+          'user.isStatic': "{{ item.static | default('notConfirmed') }}"
+          'user.ifupdown.address': "{{ item.address | default('nonExistingStaticIp') }}"
+          'user.ifupdown.gateway': "{{ item.gateway | default('nonExistingGateway') }}"
+          'user.ifupdown.dnsNameservers': "{{ item.dnsNameservers | default('nonExistingNameservers') }}"
         ephemeral: no
         source:
           type: image
@@ -71,10 +78,39 @@
           - '{{ profileName }}'
         wait_for_ipv4_addresses: yes
         state: started
-      loop: '{{ containerNames }}'
-      loop_control:
-        index_var: i
       # TODO: fix error
       # error causes lxd daemon to
       # crash and restart
       ignore_errors: yes
+      # register: command_result
+      # failed_when: "'httplib.BadStatusLine: No status line received - the server has closed the connection' in command_result.stderr"
+      loop: '{{ containers }}'
+      loop_control:
+        index_var: i
+    # - name: create lxd containers
+    #   lxd_container:
+    #     name: '{{ containerNamePrefix }}{{ item }}'
+    #     architecture: x86_64
+    #     config:
+    #       'user.fqdn': '{{ item }}.{{ domainName }}'
+    #       'user.hostname': '{{ item }}'
+    #       'user.user-data': "{{ lookup('template', 'user-data.yaml.j2') }}"
+    #       'user.meta-data': "{{ lookup('template', 'meta-data.yaml.j2') }}"
+    #     ephemeral: no
+    #     source:
+    #       type: image
+    #       mode: pull
+    #       protocol: lxd
+    #       alias: '{{ imageName }}'
+    #     profiles:
+    #       - '{{ profileName }}'
+    #     wait_for_ipv4_addresses: yes
+    #     state: started
+    #   loop: '{{ containerNames }}'
+    #   loop_control:
+    #     index_var: i
+    #   when: containerName != primary
+    #   # TODO: fix error
+    #   # error causes lxd daemon to
+    #   # crash and restart
+    #   ignore_errors: yes

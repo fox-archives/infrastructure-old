@@ -1,0 +1,67 @@
+architecture: x86_64
+creation_date: 1587176073
+expiry_date: 1589768073
+properties:
+  architecture: amd64
+  description: debian stretch
+  name: debian-stretch-amd64-cloud-20200418_0209
+  os: debian
+  release: stretch
+  serial: "20200418_0209"
+  variant: cloud
+templates:
+  /etc/hostname:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: hostname.tpl
+    properties: {}
+  /etc/hosts:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: hosts.tpl
+    properties: {}
+  /etc/network/interfaces:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: interfaces.tpl
+    properties: {}
+  /var/lib/cloud/seed/nocloud-net/meta-data:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: cloud-init-meta.tpl
+    properties: {}
+  /var/lib/cloud/seed/nocloud-net/network-config:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: cloud-init-network-config.tpl
+    properties: {}
+  /var/lib/cloud/seed/nocloud-net/user-data:
+    when:
+    - copy
+    - create
+    create_only: false
+    template: cloud-init-user.tpl
+    properties:
+      default: |
+        #cloud-config
+        {}
+  /var/lib/cloud/seed/nocloud-net/vendor-data:
+    when:
+    - create
+    - copy
+    create_only: false
+    template: cloud-init-vendor-data.tpl
+    properties:
+      default: |-
+        #cloud-config
+        {}

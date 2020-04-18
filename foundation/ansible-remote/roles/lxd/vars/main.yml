@@ -1,8 +1,12 @@
 ---
 imageName: debian-base-custom
-profileName: infrastructure-profile
-containerNamePrefix: infrastructure-container-
-containerNames:
-  - first
-  - second
-  - third
+profileName: infrastructure-foundation-profile
+containerNamePrefix: infrastructure-foundation-container-
+containers:
+  - name: primary
+    static: confirmed
+    address: '10.0.0.3/16'
+    gateway: '10.0.0.1'
+    dnsNameservers: '1.1.1.1'
+  - name: secondary
+  - name: tertiary

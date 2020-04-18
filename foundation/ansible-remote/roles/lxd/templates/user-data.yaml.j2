@@ -3,11 +3,11 @@ package_update: false
 package_upgrade: false
 locale: en_US.UTF-8
 timezone: America/Los_Angelos
-final_message: {{ item }} is finally up after $UPTIME at $TIMESTAMP
+final_message: {{ item.name }} is finally up after $UPTIME at $TIMESTAMP
 manage_etc_hosts: true
 preserve_hostname: false
-fqdn: '{{ item }}.{{ domainName }}'
-hostname: '{{ item }}'
+fqdn: '{{ item.name }}.{{ domainName }}'
+hostname: '{{ item.name }}'
 
 users:
   - default
@@ -24,7 +24,7 @@ system_info:
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
     shell: /bin/bash
     ssh_authorized_keys:
-      - {{ lookup('file', item + '.key.pub') }}
+      - {{ lookup('file', item.name + '.key.pub') }}
 
 cloud_init_modules:
   - migrator
