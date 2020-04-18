@@ -58,3 +58,7 @@
       lxd_container:
         name: debian-base
         state: stopped
+    - name: remove test image
+      lxd_container:
+        name: debian-base
+        state: absent

@@ -1,7 +1,7 @@
 # ordinal
 
 contains code for the ordinal lxd containers provisioned on `foundation`
-. the lxd machine containers are called `foundation-container-{primary,secondary,tertiary}`, to provide the following functionality:
+. the lxd machine containers are called `foundation-{primary,secondary,tertiary}`, to provide the following functionality:
 
 1. `primary` contains the kea dhcp4, kea ddns, and bind9 dns server
 2. `secondary` contains terraform, ansible, and distrobuilder, and a git clone of this repository

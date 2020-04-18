@@ -4,7 +4,7 @@
 # current ansible directory)
 imageName: debian-base-custom
 profileName: infrastructure-foundation-profile
-containerNamePrefix: infrastructure-foundation-container-
+containerNamePrefix: foundation-
 containers:
   - name: primary
     static: confirmed
