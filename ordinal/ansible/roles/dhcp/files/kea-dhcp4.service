@@ -1,15 +1,1 @@
-[Unit]
-Description=controls kea dhcp4
-Wants=network-online.target
-After=network-online.target
-After=time-sync.target
-
-[Service]
-ExecStart=/usr/local/sbin/kea-dhcp4 -c /usr/local/etc/kea/kea-dhcp4.conf
-ExecReload=/usr/local/sbin/keactrl reload -s dhcp4
-ExecStop=/usr/local/sbin/keactrl stop -s dhcp4
-RestartSec=150ms
-
-[Install]
-WantedBy=multi-user.target
-
+../../../../kea/kea-dhcp4.service

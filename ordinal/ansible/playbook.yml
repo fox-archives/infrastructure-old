@@ -3,6 +3,9 @@
   become: true
   gather_facts: true
   hosts: dhcp:&dns
+  vars:
+    keaPrefix: /usr/local
+    keaEtcDir: '{{ keaPrefix }}/etc/kea'
   roles:
     - role: common
       tags: common

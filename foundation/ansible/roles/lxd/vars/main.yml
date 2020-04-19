@@ -3,7 +3,7 @@
 # cause scripts in other parts of this repo to break (not just
 # current ansible directory)
 imageName: debian-base-custom
-profileName: infrastructure-foundation-profile
+profileName: foundation-profile
 containerNamePrefix: foundation-
 containers:
   - name: primary

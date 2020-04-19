@@ -7,17 +7,16 @@
 # packer
 packer_cache/
 
-# logs
-*.log
+# private
+/ordinal/kea
 
-# large files
+# large
 *.xz
 *.squashfs
 *.iso
-
-# large dirs
 rootfs/
 
 # misc
 *.key
 *.pub
+*.log

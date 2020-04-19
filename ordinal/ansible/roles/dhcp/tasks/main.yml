@@ -18,3 +18,17 @@
   loop:
     - kea-dhcp-ddns
     - kea-dhcp4
+
+- name: copy kea config
+  copy:
+    src: '{{ item }}'
+    dest: '{{ keaEtcDir }}'
+  loop:
+    - kea-ctrl-agent.conf
+    - kea-dhcp-ddns.conf
+    - kea-dhcp4.conf
+    - kea-dhcp6.conf
+    - keactrl.conf
+  notify:
+    - restart kea-dhcp-ddns
+    - restart kea-dhcp4
