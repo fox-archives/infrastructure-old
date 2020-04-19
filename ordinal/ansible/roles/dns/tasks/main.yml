@@ -1,2 +1,19 @@
 ---
-[]
+- name: isntall packages required to build bind9 (named)
+  apt:
+    name:
+      - clang
+      - automake
+      - make
+      - pkg-config
+      - python3-ply
+      - libuv1-dev
+      - libjson-c-dev
+      - libcap-dev
+      - zlibc
+      - libxml2-dev
+
+- name: copy bind9 (named) systemd service
+  copy:
+    src: named.service
+    dest: '{{ systemdDir }}'

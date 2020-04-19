@@ -1,23 +1,21 @@
 ---
-- name: configure ordinal hosts
-  become: false
+- name: configure dhcp ordinal hosts
+  become: true
   gather_facts: true
-  hosts:
-    - name: ordinal static entries
-      hosts: static
-      roles:
-        - role: common
-          tags: common
-        - role: dns
-          tags: dns
-        - role: dhcp
-          tags: dhcp
-        - role: final
-          tags: final
-    - name: ordinal dynamic entries
-      hosts: dynamic
-      roles:
-        - role: common
-          tags: common
-        - role: final
-          tags: final
+  hosts: dhcp:&dns
+  roles:
+    - role: common
+      tags: common
+    - role: dns
+      tags: dns
+    - role: dhcp
+      tags: dhcp
+    - role: dns
+      tags: dns
+- name: configure dynamic ordinal hosts
+  become: true
+  gather_facts: true
+  hosts: dynamic
+  roles:
+    - role: common
+      tags: common

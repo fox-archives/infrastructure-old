@@ -1,0 +1,5 @@
+---
+# for now this cannot be avoided, as the stock lxd
+# debian images fail ssome
+- name: reset failed state of packages
+  command: systemctl reset-failed cgproxy.service systemd-journald-audit.socket

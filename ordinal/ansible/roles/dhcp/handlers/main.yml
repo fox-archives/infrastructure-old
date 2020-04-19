@@ -1,0 +1,10 @@
+# ---
+# - name: restart kea-dhcp-ddns
+#   systemd:
+#     name: kea-dhcp-ddns
+#     state: restarted
+
+# - name: restart kea-dhcp4
+#   systemd:
+#     name: kea-dhcp4
+#     state: restarted

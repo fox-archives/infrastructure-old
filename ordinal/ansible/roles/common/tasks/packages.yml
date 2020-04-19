@@ -1,8 +1,15 @@
 ---
 # other packages are defined in
 # distrobuilder/distrobuilder.yaml
-- name: install packages
+- name: apt housekeeping
+  apt:
+    update_cache: yes
+    autoclean: yes
+    autoremove: yes
+    upgrade: safe
+
+- name: install convenience packages
   apt:
     name:
-      - sudo
+      - curl
     state: present

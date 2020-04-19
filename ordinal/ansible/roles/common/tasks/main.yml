@@ -1,4 +1,7 @@
 ---
+- name: config systemd
+  import_tasks: systemd.yml
+
 - name: config network
   import_tasks: network.yml
 

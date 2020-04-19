@@ -1,2 +1,20 @@
 ---
-[]
+- name: install packages required to build kea
+  apt:
+    name:
+      - clang
+      - automake
+      - make
+      - pkg-config
+      - libbotan1.10-dev
+      - libboost1.62-all-dev
+      - liblog4cplus-dev
+    state: present
+
+- name: copy {{ item }} service
+  copy:
+    src: '{{ item }}.service'
+    dest: '{{ systemdDir }}'
+    loop:
+      - kea-dhcp-ddns
+      - kea-dhcp4
