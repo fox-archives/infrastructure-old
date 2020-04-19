@@ -11,10 +11,10 @@
       - liblog4cplus-dev
     state: present
 
-- name: copy {{ item }} service
+- name: copy kea services
   copy:
     src: '{{ item }}.service'
     dest: '{{ systemdDir }}'
-    loop:
-      - kea-dhcp-ddns
-      - kea-dhcp4
+  loop:
+    - kea-dhcp-ddns
+    - kea-dhcp4
