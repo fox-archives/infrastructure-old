@@ -195,13 +195,14 @@ files:
       - vm
 
 # other packages defined in
-# ansible-remote/roles/common/tasks/package.yml
+# ansible/roles/common/tasks/package.yml
 packages:
   manager: apt
   update: true
   cleanup: true
   sets:
     - packages:
+        - sudo
         - dialog
         - ifupdown
         - init

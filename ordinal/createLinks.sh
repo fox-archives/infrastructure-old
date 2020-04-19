@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-fileWithOrdinalContainerNames="../foundation/ansible-remote/roles/lxd/vars/main.yml"
+fileWithOrdinalContainerNames="../foundation/ansible/roles/lxd/vars/main.yml"
 json="$(python -c "import json,yaml; print(json.dumps(yaml.safe_load(open(\"$fileWithOrdinalContainerNames\", \"r\").read())))")"
 
 readarray -t containerNames < <(echo "$json" | jq -c '.containers[].name' | sed s/\\\"//g)

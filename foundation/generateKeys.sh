@@ -11,5 +11,5 @@ else
   echo "skipping generating $keyFileName as it already exists"
 fi
 
-ln -sf "../../../../../$keyFileName.pub" packer/ansible-local/roles/common/files/
-ln -sf "../../$keyFileName" ansible-remote/
+ln -sf "../../../../../$keyFileName.pub" packer/ansible/roles/common/files/
+ln -sf "../../$keyFileName" ansible/

@@ -8,7 +8,7 @@ containerNamePrefix: foundation-
 containers:
   - name: primary
     static: confirmed
-    address: '10.0.0.3/16'
+    address: '10.0.0.4/16'
     gateway: '10.0.0.1'
     dnsNameservers: '1.1.1.1'
   - name: secondary

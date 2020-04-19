@@ -20,7 +20,7 @@ generateKey:
 ifeq ("$(wildcard $(keyFileName))","")
 	ssh-keygen -t ed25519 -f ${keyFileName} -C 'ssh key for a base host'
 endif
-	cp ${keyFileName}.pub packer/ansible-local/roles/common/files/
+	cp ${keyFileName}.pub packer/ansible/roles/common/files/
 	cp ${keyFileName} terraform/
 	@echo ensure you copy \`base.key\{,.pub\}\` to \`~/.ssh/config\` with the proper hostname
 

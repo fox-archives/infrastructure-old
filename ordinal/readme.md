@@ -13,7 +13,7 @@ contains code for the ordinal lxd containers provisioned on `foundation`
   - custom templates for `/etc/hostname` and `/etc/hosts` to ensure correct hostname is broadcasted during initial dhcp discovery phrase (`cloud-init` stage is too late for lxd containers)
   - installs packages (at build time)
 
-## ansible-remote
+## ansible
 
 - sets up bind9 and kea servers on `primary`
 - installs all required tools on `secondary`
@@ -27,5 +27,5 @@ make generate-keys
 make distrobuilder-generate-and-package
 
 # third: further provision machine to final state
-make ansible-remote-provision
+make ansible-provision
 ```

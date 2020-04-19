@@ -1,5 +1,5 @@
 .PHONY: lint generate-key packer-build \
-	ansible-remote-provision distrobuilder-bootstrap \
+	ansible-provision distrobuilder-bootstrap \
 	distrobuilder-package distrobuilder-generate-and-package
 
 default: lint
@@ -19,10 +19,10 @@ packer-build:
 	cd packer && touch artifacts/.gitkeep
 
 
-# ansible-remote
-ansible-remote-provision:
+# ansible
+ansible-provision:
 	./checkPrerequisites.sh
-	cd ansible-remote && ansible-playbook -i inventory.ini \
+	cd ansible && ansible-playbook -i inventory.ini \
 		--extra-vars "rootPassword='$$rootPassword' opsPassword='$$opsPassword'" \
 		--private-key "../foundation.key" \
 		./playbook.yml

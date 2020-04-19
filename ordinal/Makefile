@@ -1,4 +1,4 @@
-.PHONY: create-links ansible-remote-provision
+.PHONY: create-links ansible-provision
 
 default: lint
 
@@ -24,8 +24,9 @@ distrobuilder-generate-and-package:
 	cd distrobuilder && sudo distrobuilder build-lxd distrobuilder.yaml artifacts/
 
 
-# ansible-remote
-ansible-remote-provision:
-	cd ansible-remote && ansible-playbook -i inventory.ini \
-		--private-key "foundation.key" \
+# ansible
+provisionHosts ?= hosts
+ansible-provision:
+	cd ansible && ansible-playbook -i inventory.ini \
+		--private-key ../primary.key \
 		./playbook.yml

@@ -5,14 +5,14 @@
 ## packer
 
 - the image is build with packer, and must be `dd`'ed manually
-- packer is configured to use the qemu builder (code in `packer/debian.json`), which eventually starts the ansible-local provisioner (code in `packer/ansible-local`)
+- packer is configured to use the qemu builder (code in `./packer/debian.json`), which eventually starts the ansible-local provisioner (code in `packer/ansible`)
 - the ansible-local provisioner:
   - sets up network partially and sshd
   - creates users and their passwords
 
-## ansible-remote
+## ansible
 
-- further config is done with ansible remotely (code in `ansible-remote`)
+- further config is done with ansible remotely (code in `./ansible`)
 - it finishes network config (creates bridged network device)
 - does other miscellaneous configuration
 - starts the three lxd containers
@@ -31,5 +31,5 @@ make packer-build
 
 # third: remotely provision host machine
 # note: requires multiple password entries
-rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make ansible-remote-provision
+rootPassword="$(openssl passwd -1)" opsPassword="$(openssl passwd -1)" make ansible-provision
 ```
