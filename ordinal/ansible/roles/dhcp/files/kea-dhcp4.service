@@ -1,4 +1,3 @@
-# /etc/systemd/system/kea-dhcp4.service
 [Unit]
 Description=controls kea dhcp4
 Wants=network-online.target

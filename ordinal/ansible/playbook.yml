@@ -12,10 +12,10 @@
       tags: dhcp
     - role: dns
       tags: dns
-- name: configure dynamic ordinal hosts
-  become: true
-  gather_facts: true
-  hosts: dynamic
-  roles:
-    - role: common
-      tags: common
+# - name: configure dynamic ordinal hosts
+#   become: true
+#   gather_facts: true
+#   hosts: dynamic
+#   roles:
+#     - role: common
+#       tags: common
