@@ -25,8 +25,8 @@ distrobuilder-generate-and-package:
 
 
 # ansible
-provisionHosts ?= hosts
+playbook ?= non
 ansible-provision:
 	cd ansible && ansible-playbook -i inventory.ini \
 		--private-key ../primary.key \
-		./playbook.yml
+		$(playbook).yml

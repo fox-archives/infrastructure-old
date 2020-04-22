@@ -1,0 +1,7 @@
+---
+- name: configure tertiary
+  gather_facts: true
+  hosts: dynamic
+  roles:
+    - role: common
+      tags: common

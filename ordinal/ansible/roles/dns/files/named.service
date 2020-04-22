@@ -1,16 +1,1 @@
-# /etc/systemd/system/named.service
-[Unit]
-Description=for bind9 dns server
-Documentation=man:named(8)
-After=network.target
-
-[Service]
-Type=forking
-ExecStart=/usr/local/sbin/named -u named -4 -c /usr/local/etc/named/named.conf
-ExecReload=/usr/local/sbin/rndc reload
-ExecStop=/usr/local/sbin/rndc stop
-RestartSec=150ms
-#RuntimeDirectory=/usr/local/etc/named/run/named
-
-[Install]
-WantedBy=multi-user.target
+../../../../bind9/named.service

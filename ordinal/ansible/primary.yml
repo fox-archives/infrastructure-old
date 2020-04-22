@@ -1,0 +1,23 @@
+---
+- name: configure dhcp ordinal hosts
+  become: true
+  gather_facts: true
+  hosts: dhcp:&dns
+  vars:
+    keaPrefix: /usr/local
+    keaEtcDir: '{{ keaPrefix }}/etc/kea'
+    bindPrefix: /usr/local
+    bindEtcDir: '{{ bindPrefix }}/etc/named'
+    bindCacheDir: '{{ bindPrefix }}/var/cache/named'
+    bindLogDir: '{{ bindPrefix }}/var/log/named'
+    bindRunDir: '{{ bindPrefix }}/var/run'
+    rndcKey: '{{ bindPrefix }}/etc/rndcKey'
+  roles:
+    - role: common
+      tags: common
+    - role: dns
+      tags: dns
+    - role: dhcp
+      tags: dhcp
+    - role: dns
+      tags: dns

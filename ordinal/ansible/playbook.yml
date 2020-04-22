@@ -1,24 +1,6 @@
 ---
-- name: configure dhcp ordinal hosts
-  become: true
-  gather_facts: true
-  hosts: dhcp:&dns
-  vars:
-    keaPrefix: /usr/local
-    keaEtcDir: '{{ keaPrefix }}/etc/kea'
-  roles:
-    - role: common
-      tags: common
-    - role: dns
-      tags: dns
-    - role: dhcp
-      tags: dhcp
-    - role: dns
-      tags: dns
-# - name: configure dynamic ordinal hosts
-#   become: true
-#   gather_facts: true
-#   hosts: dynamic
-#   roles:
-#     - role: common
-#       tags: common
+- name: import primary
+  import_playbook: primary.yml
+
+- name: import dynamic
+  import_playbook: dynamic.yml

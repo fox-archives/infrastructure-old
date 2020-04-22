@@ -1,5 +1,5 @@
 ---
-- name: isntall packages required to build bind9 (named)
+- name: install packages required to build bind9 (named)
   apt:
     name:
       - clang
@@ -13,7 +13,61 @@
       - zlibc
       - libxml2-dev
 
-- name: copy bind9 (named) systemd service
+- name: create bind user
+  import_tasks: user.yml
+
+- name: copy bind9 systemd service
   copy:
     src: named.service
     dest: '{{ systemdDir }}'
+
+- name: ensure prerequired directories for bind to function
+  block:
+    - name: files with named / named ownership
+      file:
+        path: '{{ item }}'
+        owner: named
+        group: named
+        state: directory
+      loop:
+        - '{{ bindEtcDir }}/zones'
+        - '{{ bindCacheDir }}'
+        - '{{ bindLogDir }}'
+        - '{{ bindRunDir }}'
+    - name: files with root / staff ownership
+      file:
+        path: '{{ item }}'
+        owner: root
+        group: staff
+      loop:
+        - '{{ bindPrefix }}/var/cache'
+        - '{{ bindPrefix }}/var/log'
+
+- name: create rndc.key
+  command: rndc-confgen -a
+
+- name: copy all bind config
+  block:
+    - name: copy bind config
+      copy:
+        src: '{{ item }}'
+        dest: '{{ bindEtcDir }}'
+        owner: named
+        group: named
+      loop:
+        - named.conf
+        - named.log.conf
+    - name: copy bind zones
+      copy:
+        src: '{{ item }}'
+        owner: named
+        group: named
+        dest: '{{ bindEtcDir }}/zones/{{ item }}'
+      loop:
+        - dev.kofler.internal.local.dynamic.zone
+        - dev.kofler.internal.local.test.zone
+        - dev.kofler.internal.local.zone
+        - dev.kofler.internal.test.zone
+      notify:
+        - restart named
+        - restart kea-dhcp-ddns

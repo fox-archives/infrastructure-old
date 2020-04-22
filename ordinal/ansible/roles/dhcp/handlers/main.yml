@@ -8,5 +8,13 @@
 - name: restart kea-dhcp4
   systemd:
     name: kea-dhcp4
+    enabled: yes
     state: restarted
-    daemon_reload: true
+    daemon_reload: yes
+
+- name: restart named
+  systemd:
+    name: named
+    enabled: yes
+    state: restarted
+    daemon_reload: yes

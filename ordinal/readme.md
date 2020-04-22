@@ -27,5 +27,5 @@ make generate-keys
 make distrobuilder-generate-and-package
 
 # third: further provision machine to final state
-make ansible-provision
+playbook=primary make ansible-provision
 ```
