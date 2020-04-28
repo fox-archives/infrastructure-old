@@ -8,8 +8,10 @@
 packer_cache/
 
 # private
-/ordinal/kea/
-/ordinal/bind9/
+/ordinal/kea/*
+!/ordinal/kea/.gitkeep
+/ordinal/bind9/*
+!/ordinal/bind9/.gitkeep
 
 # large
 *.xz
