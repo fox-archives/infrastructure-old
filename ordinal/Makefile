@@ -28,5 +28,6 @@ distrobuilder-generate-and-package:
 playbook ?= non
 ansible-provision:
 	cd ansible && ansible-playbook -i inventory.ini \
+		--ssh-common-args '-o StrictHostKeyChecking=no' \
 		--private-key ../primary.key \
-		$(playbook).yml
+		$(playbook).yml $(args)

@@ -4,14 +4,21 @@
   gather_facts: true
   hosts: dhcp:&dns
   vars:
+    installBind: false
+    installKea: false
     keaPrefix: /usr/local
+    keaVersion: '1.6.2'
+    keaSrcDir: '{{ keaPrefix }}/src/kea-{{ keaVersion }}'
     keaEtcDir: '{{ keaPrefix }}/etc/kea'
     bindPrefix: /usr/local
+    bindVersion: '9.16.2'
+    bindSrcDir: '{{ bindPrefix }}/src/bind-{{ bindVersion }}'
     bindEtcDir: '{{ bindPrefix }}/etc/named'
     bindCacheDir: '{{ bindPrefix }}/var/cache/named'
     bindLogDir: '{{ bindPrefix }}/var/log/named'
     bindRunDir: '{{ bindPrefix }}/var/run'
-    rndcKey: '{{ bindPrefix }}/etc/rndcKey'
+    bindUser: 'named'
+    rndcKeyFile: '{{ bindPrefix }}/etc/rndc.key'
   roles:
     - role: common
       tags: common

@@ -27,5 +27,6 @@ make generate-keys
 make distrobuilder-generate-and-package
 
 # third: further provision machine to final state
-playbook=primary make ansible-provision
+playbook=primary make ansible-provision \
+  args="--extra-vars 'installBind=true installKea=true'"
 ```

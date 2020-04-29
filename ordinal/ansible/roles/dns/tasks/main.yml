@@ -1,4 +1,9 @@
 ---
+- name: install misc tools
+  apt:
+    name:
+      - bind9utils
+
 - name: install packages required to build bind9 (named)
   apt:
     name:
@@ -23,11 +28,11 @@
 
 - name: ensure prerequired directories for bind to function
   block:
-    - name: files with named / named ownership
+    - name: files with named / staff ownership
       file:
         path: '{{ item }}'
-        owner: named
-        group: named
+        owner: '{{ bindUser }}'
+        group: staff
         state: directory
       loop:
         - '{{ bindEtcDir }}/zones'
@@ -44,30 +49,60 @@
         - '{{ bindPrefix }}/var/log'
 
 - name: create rndc.key
-  command: rndc-confgen -a
+  command: rndc-confgen -u {{ bindUser }} -c {{ rndcKeyFile }}
 
 - name: copy all bind config
   block:
     - name: copy bind config
       copy:
         src: '{{ item }}'
-        dest: '{{ bindEtcDir }}'
-        owner: named
-        group: named
+        dest: '{{ bindEtcDir }}/{{ item }}'
+        owner: '{{ bindUser }}'
+        group: staff
       loop:
         - named.conf
         - named.log.conf
     - name: copy bind zones
       copy:
         src: '{{ item }}'
-        owner: named
-        group: named
+        owner: '{{ bindUser }}'
+        group: staff
         dest: '{{ bindEtcDir }}/zones/{{ item }}'
       loop:
         - dev.kofler.internal.local.dynamic.zone
         - dev.kofler.internal.local.test.zone
         - dev.kofler.internal.local.zone
         - dev.kofler.internal.test.zone
+
+- name: actually install bind
+  block:
+    - name: download bind archive
+      get_url:
+        url: https://downloads.isc.org/isc/bind9/{{ bindVersion }}/bind-{{ bindVersion }}.tar.xz
+        dest: '{{ bindPrefix }}/src'
+    - name: unzip
+      unarchive:
+        src: '{{ bindPrefix }}/src/bind-{{ bindVersion }}.tar.xz'
+        dest: '{{ bindPrefix }}/src'
+        remote_src: yes
+    - name: remove downloaded file
+      file:
+        path: '{{ bindSrcDir }}.tar.xz'
+        state: absent
+    - name: make clean
+      make:
+        chdir: '{{ bindSrcDir }}'
+        target: clean
+    - name: ./configure
+      raw: cd {{ bindSrcDir }} && ./configure --prefix=/usr/local --with-json-c --with-zlib --with-libxml2
+    - name: make
+      make:
+        chdir: '{{ bindSrcDir }}'
+    - name: make install
+      make:
+        chdir: '{{ bindSrcDir }}'
+        target: install
       notify:
         - restart named
         - restart kea-dhcp-ddns
+  when: installBind | bool

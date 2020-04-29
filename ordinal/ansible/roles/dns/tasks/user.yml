@@ -1,13 +1,13 @@
 ---
 - name: create named group
   group:
-    name: named
+    name: '{{ bindUser }}'
     state: present
 
 - name: create named user
   user:
-    name: named
-    group: named
+    name: '{{ bindUser }}'
+    group: '{{ bindUser }}'
     create_home: no
     comment: for bind9
     state: present

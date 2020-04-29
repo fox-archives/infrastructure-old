@@ -15,4 +15,5 @@
       - curl
       - iputils-ping
       - less
+      - man
     state: present
